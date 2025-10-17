@@ -55,20 +55,20 @@
     .success { border-left-color: var(--accent-2); }
     .danger { border-left-color: var(--danger); }
 
-    /* === Body-map améliorée === */
+    /* === Body-map mannequin (non superposée) === */
     .bodymap { display:flex; align-items:center; gap:12px; margin-top:8px; }
     .bodymap .mapwrap {
       background:#0a0f1b; border:1px solid #192133; border-radius:12px;
-      padding:8px; width:240px; min-width:240px;
+      padding:10px; width:260px; min-width:260px;
     }
     .bodymap-hint { font-size:12px; color:var(--muted); }
-    .bm-silhouette { fill:#0b1220; stroke:#1d2740; stroke-width:1.2; opacity:.7; }
+    .bm-outline { fill:#0b1220; stroke:#1d2740; stroke-width:1.2; opacity:.6; }
     .bm-region {
-      fill:transparent; stroke:#263043; stroke-width:1.5; cursor:pointer;
-      transition:fill .15s ease, stroke .15s ease, opacity .15s ease;
+      fill:#0b1220; stroke:#263043; stroke-width:1.5; cursor:pointer;
+      transition:fill .15s ease, stroke .15s ease;
     }
-    .bm-region:hover, .bm-region:focus { outline:none; fill:rgba(99,102,241,.12); stroke:#7c89ff; }
-    .bm-region.active { fill:rgba(99,102,241,.25); stroke:#8b5cf6; }
+    .bm-region:hover, .bm-region:focus { outline:none; fill:#111a2e; stroke:#7c89ff; }
+    .bm-region.active { fill:rgba(99,102,241,.28); stroke:#8b5cf6; }
   </style>
 </head>
 <body>
@@ -104,176 +104,55 @@
           <div style="flex:1 1 220px; min-width: 220px;">
             <label for="location">Localisation principale de la douleur</label>
 
-            <!-- ===== Body-map silhouette (synchronisée) ===== -->
+            <!-- ===== Body-map “mannequin” sans superposition ===== -->
             <div class="bodymap" aria-label="Carte du corps cliquable">
               <div class="mapwrap">
-                <svg viewBox="0 0 180 360" width="100%" role="img" aria-labelledby="bmTitle">
-                  <title id="bmTitle">Body-map simplifiée</title>
+                <svg viewBox="0 0 200 360" width="100%" role="img" aria-labelledby="bmTitle">
+                  <title id="bmTitle">Body-map mannequin (face)</title>
 
-                  <!-- Silhouette d'arrière-plan (non cliquable) -->
-                  <path class="bm-silhouette" d="
-                    M90,18
-                    c14,0 26,11 26,24
-                    c0,10 -7,18 -9,24
-                    c14,6 24,18 28,32
-                    c3,10 3,21 3,31
-                    v16
-                    c10,6 18,14 22,24
-                    c4,8 6,18 6,27
-                    v14
-                    c0,8 -2,16 -6,23
-                    c-8,12 -19,22 -31,28
-                    v36
-                    c0,6 -4,10 -10,10
-                    h-8
-                    c-6,0 -10,-4 -10,-10
-                    v-32
-                    h-6
-                    v32
-                    c0,6 -4,10 -10,10
-                    h-8
-                    c-6,0 -10,-4 -10,-10
-                    v-36
-                    c-12,-6 -23,-16 -31,-28
-                    c-4,-7 -6,-15 -6,-23
-                    v-14
-                    c0,-9 2,-19 6,-27
-                    c4,-10 12,-18 22,-24
-                    v-16
-                    c0,-10 0,-21 3,-31
-                    c4,-14 14,-26 28,-32
-                    c-2,-6 -9,-14 -9,-24
-                    c0,-13 12,-24 26,-24 z
-                  " />
+                  <!-- silhouette fine (repère visuel, non interactive) -->
+                  <path class="bm-outline" d="M100,26
+                    c16,0 29,13 29,28 c0,8 -3,16 -8,22
+                    c14,6 24,18 29,33 c4,11 5,23 5,35
+                    v10 c10,7 17,16 21,27 c4,9 6,19 6,29
+                    v10 c0,10 -3,20 -8,29 c-8,14 -20,25 -34,31
+                    v30 c0,7 -5,12 -12,12 h-10 c-7,0 -12,-5 -12,-12 v-28 h-8 v28
+                    c0,7 -5,12 -12,12 h-10 c-7,0 -12,-5 -12,-12 v-30
+                    c-14,-6 -26,-17 -34,-31 c-5,-9 -8,-19 -8,-29 v-10
+                    c0,-10 2,-20 6,-29 c4,-11 11,-20 21,-27 v-10
+                    c0,-12 1,-24 5,-35 c5,-15 15,-27 29,-33
+                    c-5,-6 -8,-14 -8,-22 c0,-15 13,-28 29,-28 z" />
 
-                  <!-- Zones cliquables (paths plus organiques) -->
                   <!-- Tête -->
-                  <path class="bm-region" tabindex="0" data-zone="head" d="
-                    M90,18
-                    c14,0 26,11 26,24
-                    c0,12 -12,22 -26,22
-                    c-14,0 -26,-10 -26,-22
-                    c0,-13 12,-24 26,-24 z
-                  ">
-                    <title>Tête / Crâne</title>
-                  </path>
+                  <circle class="bm-region" tabindex="0" data-zone="head" cx="100" cy="38" r="22"><title>Tête / Crâne</title></circle>
 
                   <!-- Cou -->
-                  <path class="bm-region" tabindex="0" data-zone="neck" d="
-                    M74,64
-                    c5,4 11,6 16,6
-                    c5,0 11,-2 16,-6
-                    v10
-                    c-5,4 -11,6 -16,6
-                    c-5,0 -11,-2 -16,-6 z
-                  ">
-                    <title>Cou / Gorge</title>
-                  </path>
+                  <rect class="bm-region" tabindex="0" data-zone="neck" x="90" y="60" rx="4" ry="4" width="20" height="14"><title>Cou / Gorge</title></rect>
 
                   <!-- Thorax -->
-                  <path class="bm-region" tabindex="0" data-zone="chest" d="
-                    M62,82
-                    c10,-6 20,-8 28,-8
-                    c8,0 18,2 28,8
-                    c6,4 10,10 12,17
-                    c2,7 2,14 2,22
-                    c-22,10 -60,10 -72,0
-                    c0,-8 0,-15 2,-22
-                    c2,-7 6,-13 12,-17 z
-                  ">
-                    <title>Thorax / Poitrine</title>
-                  </path>
-
-                  <!-- Dos (zone postérieure approximée, on l'autorise ici aussi) -->
-                  <path class="bm-region" tabindex="0" data-zone="back" d="
-                    M52,90
-                    c-6,6 -10,14 -12,22
-                    c-2,9 -2,18 -2,27
-                    c18,10 88,10 106,0
-                    c0,-9 0,-18 -2,-27
-                    c-2,-8 -6,-16 -12,-22
-                    c-14,8 -28,12 -39,12
-                    c-11,0 -25,-4 -39,-12 z
-                  ">
-                    <title>Dos</title>
-                  </path>
+                  <rect class="bm-region" tabindex="0" data-zone="chest" x="65" y="78" rx="10" ry="10" width="70" height="50"><title>Thorax / Poitrine</title></rect>
 
                   <!-- Abdomen -->
-                  <path class="bm-region" tabindex="0" data-zone="abdomen" d="
-                    M66,130
-                    c8,6 16,8 24,8
-                    c8,0 16,-2 24,-8
-                    c2,10 2,19 2,28
-                    c-18,8 -36,8 -52,0
-                    c0,-9 0,-18 2,-28 z
-                  ">
-                    <title>Abdomen / Ventre</title>
-                  </path>
+                  <rect class="bm-region" tabindex="0" data-zone="abdomen" x="70" y="132" rx="10" ry="10" width="60" height="36"><title>Abdomen / Ventre</title></rect>
 
                   <!-- Bassin -->
-                  <path class="bm-region" tabindex="0" data-zone="pelvis" d="
-                    M64,162
-                    c9,6 17,8 26,8
-                    c9,0 17,-2 26,-8
-                    c3,6 5,12 6,18
-                    c-26,10 -38,10 -64,0
-                    c1,-6 3,-12 6,-18 z
-                  ">
-                    <title>Bassin</title>
-                  </path>
+                  <rect class="bm-region" tabindex="0" data-zone="pelvis" x="72" y="172" rx="10" ry="10" width="56" height="28"><title>Bassin</title></rect>
 
-                  <!-- Membres supérieurs (gauche/droite) -->
-                  <path class="bm-region" tabindex="0" data-zone="upper_ext" d="
-                    M38,92
-                    c-8,6 -14,14 -18,24
-                    c-4,10 -6,22 -6,33
-                    c0,8 2,16 6,22
-                    c4,6 10,10 16,12
-                    c4,-8 6,-18 6,-30
-                    c0,-18 -2,-38 -4,-61 z
-                  ">
-                    <title>Membres supérieurs</title>
-                  </path>
-                  <path class="bm-region" tabindex="0" data-zone="upper_ext" d="
-                    M142,92
-                    c8,6 14,14 18,24
-                    c4,10 6,22 6,33
-                    c0,8 -2,16 -6,22
-                    c-4,6 -10,10 -16,12
-                    c-4,-8 -6,-18 -6,-30
-                    c0,-18 2,-38 4,-61 z
-                  ">
-                    <title>Membres supérieurs</title>
-                  </path>
+                  <!-- Bras gauche (zone memb. sup. gauche) -->
+                  <rect class="bm-region" tabindex="0" data-zone="upper_ext" x="38" y="82" rx="12" ry="12" width="22" height="56"><title>Membres supérieurs</title></rect>
+                  <rect class="bm-region" tabindex="0" data-zone="upper_ext" x="38" y="142" rx="12" ry="12" width="22" height="62"><title>Membres supérieurs</title></rect>
 
-                  <!-- Membres inférieurs (cuisses/jambes/pieds simplifiés) -->
-                  <path class="bm-region" tabindex="0" data-zone="lower_ext" d="
-                    M72,188
-                    c-2,10 -4,22 -4,36
-                    c0,10 2,20 4,30
-                    c2,8 4,16 4,24
-                    c0,8 -2,16 -6,22
-                    h-10
-                    c-6,-10 -10,-22 -12,-36
-                    c-2,-20 0,-40 6,-58
-                    c4,-10 10,-16 18,-18 z
-                  ">
-                    <title>Membres inférieurs</title>
-                  </path>
-                  <path class="bm-region" tabindex="0" data-zone="lower_ext" d="
-                    M108,188
-                    c2,10 4,22 4,36
-                    c0,10 -2,20 -4,30
-                    c-2,8 -4,16 -4,24
-                    c0,8 2,16 6,22
-                    h10
-                    c6,-10 10,-22 12,-36
-                    c2,-20 0,-40 -6,-58
-                    c-4,-10 -10,-16 -18,-18 z
-                  ">
-                    <title>Membres inférieurs</title>
-                  </path>
+                  <!-- Bras droit -->
+                  <rect class="bm-region" tabindex="0" data-zone="upper_ext" x="140" y="82" rx="12" ry="12" width="22" height="56"><title>Membres supérieurs</title></rect>
+                  <rect class="bm-region" tabindex="0" data-zone="upper_ext" x="140" y="142" rx="12" ry="12" width="22" height="62"><title>Membres supérieurs</title></rect>
 
+                  <!-- Cuisse / jambe gauche -->
+                  <rect class="bm-region" tabindex="0" data-zone="lower_ext" x="78" y="204" rx="10" ry="10" width="20" height="68"><title>Membres inférieurs</title></rect>
+                  <rect class="bm-region" tabindex="0" data-zone="lower_ext" x="78" y="274" rx="10" ry="10" width="20" height="70"><title>Membres inférieurs</title></rect>
+
+                  <!-- Cuisse / jambe droite -->
+                  <rect class="bm-region" tabindex="0" data-zone="lower_ext" x="102" y="204" rx="10" ry="10" width="20" height="68"><title>Membres inférieurs</title></rect>
+                  <rect class="bm-region" tabindex="0" data-zone="lower_ext" x="102" y="274" rx="10" ry="10" width="20" height="70"><title>Membres inférieurs</title></rect>
                 </svg>
                 <div class="bodymap-hint">Clique une zone — le sélecteur se met à jour.</div>
               </div>
@@ -337,7 +216,7 @@
           </div>
         </div>
 
-        <div class="btns" style="margin-top:14px">
+        <div class="btns" style="margin-top:14px;">
           <button class="btn" id="btn-calc">Calculer</button>
           <button class="btn secondary" id="btn-reset" type="button">Réinitialiser</button>
         </div>
@@ -406,7 +285,7 @@
     els.pain.addEventListener('input', updatePainLabel);
     updatePainLabel();
 
-    // Moteur (inchangé)
+    // Moteur (ton existant)
     function computePreDiagnosis({ location, pain, findings, age, delayHours, hx }) {
       const out = [];
       const painSeverity = Number(pain);
@@ -506,10 +385,7 @@
       };
     }
 
-    function calculate(e) {
-      e && e.preventDefault();
-      renderResults(computePreDiagnosis(getFormValues()));
-    }
+    function calculate(e) { e && e.preventDefault(); renderResults(computePreDiagnosis(getFormValues())); }
 
     function resetForm() {
       els.incident.value = '';
