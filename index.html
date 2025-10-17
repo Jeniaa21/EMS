@@ -55,14 +55,14 @@
     .success { border-left-color: var(--accent-2); }
     .danger { border-left-color: var(--danger); }
 
-    /* === Body-map mannequin (non superposée) === */
+    /* === Body-map mannequin (segmentée, non superposée) === */
     .bodymap { display:flex; align-items:center; gap:12px; margin-top:8px; }
     .bodymap .mapwrap {
       background:#0a0f1b; border:1px solid #192133; border-radius:12px;
       padding:10px; width:260px; min-width:260px;
     }
     .bodymap-hint { font-size:12px; color:var(--muted); }
-    .bm-outline { fill:#0b1220; stroke:#1d2740; stroke-width:1.2; opacity:.6; }
+    .bm-outline { fill:#0b1220; stroke:#1d2740; stroke-width:1.2; opacity:.55; }
     .bm-region {
       fill:#0b1220; stroke:#263043; stroke-width:1.5; cursor:pointer;
       transition:fill .15s ease, stroke .15s ease;
@@ -104,7 +104,7 @@
           <div style="flex:1 1 220px; min-width: 220px;">
             <label for="location">Localisation principale de la douleur</label>
 
-            <!-- ===== Body-map “mannequin” sans superposition ===== -->
+            <!-- ===== Body-map “mannequin” segmentée ===== -->
             <div class="bodymap" aria-label="Carte du corps cliquable">
               <div class="mapwrap">
                 <svg viewBox="0 0 200 360" width="100%" role="img" aria-labelledby="bmTitle">
@@ -125,21 +125,21 @@
                   <!-- Bassin -->
                   <rect class="bm-region" tabindex="0" data-zone="pelvis" x="72" y="172" rx="10" ry="10" width="56" height="28"><title>Bassin</title></rect>
 
-                  <!-- Bras gauche (zone memb. sup. gauche) -->
-                  <rect class="bm-region" tabindex="0" data-zone="upper_ext" x="38" y="82" rx="12" ry="12" width="22" height="56"><title>Membres supérieurs</title></rect>
-                  <rect class="bm-region" tabindex="0" data-zone="upper_ext" x="38" y="142" rx="12" ry="12" width="22" height="62"><title>Membres supérieurs</title></rect>
+                  <!-- BRAS GAUCHE : bras (haut) + avant-bras (bas) -->
+                  <rect class="bm-region" tabindex="0" data-zone="upper_arm_left" x="38" y="82" rx="12" ry="12" width="22" height="40"><title>Bras gauche (humérus)</title></rect>
+                  <rect class="bm-region" tabindex="0" data-zone="forearm_left" x="38" y="124" rx="12" ry="12" width="22" height="80"><title>Avant-bras gauche</title></rect>
 
-                  <!-- Bras droit -->
-                  <rect class="bm-region" tabindex="0" data-zone="upper_ext" x="140" y="82" rx="12" ry="12" width="22" height="56"><title>Membres supérieurs</title></rect>
-                  <rect class="bm-region" tabindex="0" data-zone="upper_ext" x="140" y="142" rx="12" ry="12" width="22" height="62"><title>Membres supérieurs</title></rect>
+                  <!-- BRAS DROIT -->
+                  <rect class="bm-region" tabindex="0" data-zone="upper_arm_right" x="140" y="82" rx="12" ry="12" width="22" height="40"><title>Bras droit (humérus)</title></rect>
+                  <rect class="bm-region" tabindex="0" data-zone="forearm_right" x="140" y="124" rx="12" ry="12" width="22" height="80"><title>Avant-bras droit</title></rect>
 
-                  <!-- Cuisse / jambe gauche -->
-                  <rect class="bm-region" tabindex="0" data-zone="lower_ext" x="78" y="204" rx="10" ry="10" width="20" height="68"><title>Membres inférieurs</title></rect>
-                  <rect class="bm-region" tabindex="0" data-zone="lower_ext" x="78" y="274" rx="10" ry="10" width="20" height="70"><title>Membres inférieurs</title></rect>
+                  <!-- JAMBE GAUCHE : cuisse + jambe -->
+                  <rect class="bm-region" tabindex="0" data-zone="thigh_left" x="78" y="204" rx="10" ry="10" width="20" height="68"><title>Cuisse gauche</title></rect>
+                  <rect class="bm-region" tabindex="0" data-zone="leg_left" x="78" y="274" rx="10" ry="10" width="20" height="70"><title>Jambe gauche</title></rect>
 
-                  <!-- Cuisse / jambe droite -->
-                  <rect class="bm-region" tabindex="0" data-zone="lower_ext" x="102" y="204" rx="10" ry="10" width="20" height="68"><title>Membres inférieurs</title></rect>
-                  <rect class="bm-region" tabindex="0" data-zone="lower_ext" x="102" y="274" rx="10" ry="10" width="20" height="70"><title>Membres inférieurs</title></rect>
+                  <!-- JAMBE DROITE -->
+                  <rect class="bm-region" tabindex="0" data-zone="thigh_right" x="102" y="204" rx="10" ry="10" width="20" height="68"><title>Cuisse droite</title></rect>
+                  <rect class="bm-region" tabindex="0" data-zone="leg_right" x="102" y="274" rx="10" ry="10" width="20" height="70"><title>Jambe droite</title></rect>
                 </svg>
                 <div class="bodymap-hint">Clique une zone — le sélecteur se met à jour.</div>
               </div>
@@ -151,8 +151,22 @@
                   <option value="chest">Thorax / Poitrine</option>
                   <option value="abdomen">Abdomen / Ventre</option>
                   <option value="pelvis">Bassin</option>
-                  <option value="upper_ext">Membres supérieurs</option>
-                  <option value="lower_ext">Membres inférieurs</option>
+                  <optgroup label="Bras gauche">
+                    <option value="upper_arm_left">Bras (haut) — gauche</option>
+                    <option value="forearm_left">Avant-bras — gauche</option>
+                  </optgroup>
+                  <optgroup label="Bras droit">
+                    <option value="upper_arm_right">Bras (haut) — droit</option>
+                    <option value="forearm_right">Avant-bras — droit</option>
+                  </optgroup>
+                  <optgroup label="Jambe gauche">
+                    <option value="thigh_left">Cuisse — gauche</option>
+                    <option value="leg_left">Jambe — gauche</option>
+                  </optgroup>
+                  <optgroup label="Jambe droite">
+                    <option value="thigh_right">Cuisse — droit</option>
+                    <option value="leg_right">Jambe — droit</option>
+                  </optgroup>
                   <option value="back">Dos</option>
                   <option value="skin">Peau / Plaies</option>
                 </select>
@@ -213,7 +227,7 @@
       <section class="card" aria-labelledby="res-title">
         <div class="titlebar">
           <div class="section-title" id="res-title">Résultats (pré-diagnostic)</div>
-          <div class="prio" id="meta-count">—</div>
+        <div class="prio" id="meta-count">—</div>
         </div>
         <div id="results" class="results" aria-live="polite"></div>
         <div id="no-results" class="callout" style="display:none; margin-top:8px">Aucun résultat. Saisissez des informations puis cliquez <span class="kbd">Calculer</span>.</div>
@@ -272,61 +286,120 @@
     els.pain.addEventListener('input', updatePainLabel);
     updatePainLabel();
 
-    // Moteur (ton existant)
+    // Helpers zones détaillées
+    const isUpperArm   = z => ['upper_arm_left','upper_arm_right'].includes(z);
+    const isForearm    = z => ['forearm_left','forearm_right'].includes(z);
+    const isThigh      = z => ['thigh_left','thigh_right'].includes(z);
+    const isLeg        = z => ['leg_left','leg_right'].includes(z);
+    const isUpperExt   = z => isUpperArm(z) || isForearm(z);
+    const isLowerExt   = z => isThigh(z) || isLeg(z);
+
+    // Moteur étendu (conserve présentation)
     function computePreDiagnosis({ location, pain, findings, age, delayHours, hx }) {
       const out = [];
-      const painSeverity = Number(pain);
+      const p = Number(pain);
 
-      if (findings.bleeding) out.push({ tag: 'Hémorragie', priority: 1, advice: 'Comprimer la plaie, pansement compressif, évacuation rapide.' });
-      if (findings.lossOfConsciousness) out.push({ tag: 'Traumatisme crânien suspect', priority: 1, advice: "Surveillance neurologique, immobilisation tête/cou si mécanisme violent, évacuation." });
+      // Red flags généraux
+      if (findings.bleeding) out.push({ tag: 'Hémorragie active', priority: 1, advice: 'Compression/garrot (RP si anatomie adaptée), évacuation rapide.' });
+      if (findings.lossOfConsciousness) out.push({ tag: 'Altération neurologique (TCC suspect)', priority: 1, advice: 'Surveillance neuro, immobilisation tête/cou si mécanisme violent, évacuation.' });
 
+      // Tête / cou
       if (location === 'head' || location === 'neck') {
-        if (painSeverity >= 8) out.push({ tag: 'Traumatisme crânien modéré/sévère', priority: 2, advice: 'Céphalées intenses, vomissements, troubles -> évacuer.' });
-        else if (painSeverity >= 4) out.push({ tag: 'Commotion / contusion', priority: 3, advice: 'Repos, glace, surveillance 24h RP.' });
-        else out.push({ tag: 'Contusion légère', priority: 4, advice: 'Glace locale, repos, réévaluer.' });
+        if (p >= 8) out.push({ tag: 'Traumatisme crânien modéré/sévère', priority: 2, advice: 'Céphalées intenses, vomissements, troubles → évacuation.' });
+        else if (p >= 4) out.push({ tag: 'Commotion / contusion', priority: 3, advice: 'Repos, glace, surveillance 24h RP.' });
+        else out.push({ tag: 'Contusion légère', priority: 4, advice: 'Glace locale, repos, réévaluation.' });
+
+        if (location === 'neck') {
+          if (p >= 6 || findings.deformity) out.push({ tag: 'Entorse cervicale / lésion ligamentaire', priority: 2, advice: 'Collier (RP), éviter mobilisations, évacuation si signes neuro.' });
+          else out.push({ tag: 'Cervicalgie mécanique', priority: 3, advice: 'Repos, chaleur douce, antalgiques RP.' });
+        }
       }
 
+      // Thorax
       if (location === 'chest') {
-        if (painSeverity >= 8 || findings.deformity) out.push({ tag: 'Blessure thoracique grave (pneumothorax/contusion costale)', priority: 1, advice: 'Détresse respi possible — position demi-assise, évacuation urgente.' });
-        else if (painSeverity >= 5) out.push({ tag: 'Fracture costale ou contusion', priority: 2, advice: 'Immobiliser si possible, analgésie RP, surveiller dyspnée.' });
-        else out.push({ tag: 'Douleur thoracique mineure', priority: 3, advice: 'Repos et surveillance.' });
+        if (p >= 8 || findings.deformity) {
+          out.push({ tag: 'Fractures costales multiples / volet', priority: 1, advice: 'Détresse respi possible, évacuation urgente.' });
+          out.push({ tag: 'Pneumothorax/contusion pulmonaire (suspect)', priority: 1, advice: 'Douleur latérale + dyspnée → évacuation.' });
+        } else if (p >= 5) {
+          out.push({ tag: 'Fracture costale isolée', priority: 2, advice: 'Analgésie RP, surveiller dyspnée/toux.' });
+          out.push({ tag: 'Contusion costale', priority: 3, advice: 'Repos, glace, respiration contrôlée.' });
+        } else {
+          out.push({ tag: 'Douleur pariétale mineure', priority: 4, advice: 'Repos, surveillance.' });
+        }
       }
 
+      // Abdomen / bassin
       if (location === 'abdomen' || location === 'pelvis') {
-        if (painSeverity >= 7 || findings.bleeding) out.push({ tag: "Hémorragie interne / lésion viscérale (suspectée)", priority: 1, advice: "Transport rapide, surveiller signes de choc (pâleur, sueurs)." });
-        else if (painSeverity >= 4) out.push({ tag: 'Contusion abdominale', priority: 2, advice: 'Surveillance douleur, défense/rigidité -> évacuation RP.' });
-        else out.push({ tag: 'Douleur abdominale mineure', priority: 4, advice: 'Repos, hydratation, réévaluation.' });
+        if (p >= 7 || findings.bleeding) out.push({ tag: 'Lésion viscérale / hémorragie interne (suspecte)', priority: 1, advice: 'Transport rapide, surveiller signes de choc.' });
+        else if (p >= 4) out.push({ tag: 'Contusion abdominale', priority: 2, advice: 'Surveillance défense/rigidité; aggravation → évacuation.' });
+        else out.push({ tag: 'Atteinte pariétale mineure', priority: 4, advice: 'Glace, repos, réévaluation.' });
+        if (location === 'pelvis' && (p >= 6 || findings.deformity)) out.push({ tag: 'Atteinte pelvienne (suspecte)', priority: 1, advice: 'Douleur bassin/instabilité → évacuation.' });
       }
 
-      if (location === 'upper_ext' || location === 'lower_ext') {
-        if (findings.deformity || painSeverity >= 8) out.push({ tag: 'Fracture possible', priority: 2, advice: 'Immobiliser (attelle), contrôler saignement, évacuation pour imagerie (RP).' });
-        else if (painSeverity >= 5) out.push({ tag: 'Entorse / contusion sévère', priority: 3, advice: 'RICE (Repos, Ice, Compression, Élévation).' });
-        else out.push({ tag: 'Contusion / éraflure', priority: 4, advice: 'Nettoyage, pansement, surveillance.' });
+      // Membres supérieurs (détaillés)
+      if (isUpperExt(location)) {
+        if (isUpperArm(location)) {
+          if (findings.deformity || p >= 8) out.push({ tag: 'Fracture humérus (suspecte)', priority: 2, advice: 'Immobiliser bras, coussin d’écharpe, évacuation pour imagerie (RP).' });
+          if (p >= 5 && !findings.deformity) out.push({ tag: 'Luxation épaule (possible)', priority: 2, advice: 'Déformation/impotence → immobiliser, évacuation.' });
+          if (p >= 4) out.push({ tag: 'Contusion musculaire (deltoïde/biceps)', priority: 3, advice: 'RICE, antalgiques RP.' });
+          if (p < 4) out.push({ tag: 'Douleur bénigne du bras', priority: 4, advice: 'Repos, glace, surveillance.' });
+        }
+        if (isForearm(location)) {
+          if (findings.deformity || p >= 8) out.push({ tag: 'Fracture radius/ulna (avant-bras)', priority: 2, advice: 'Attelle, contrôle saignement, évacuation.' });
+          else if (p >= 5) {
+            out.push({ tag: 'Entorse poignet (possible)', priority: 3, advice: 'Contention, RICE.' });
+            out.push({ tag: 'Fracture non déplacée (possible)', priority: 3, advice: 'Douleur osseuse à la palpation → imagerie (RP).' });
+          } else {
+            out.push({ tag: 'Contusion avant-bras', priority: 4, advice: 'Glace, pansement si abrasion.' });
+          }
+          if (findings.bleeding) out.push({ tag: 'Plaie tendineuse (suspecte)', priority: 2, advice: 'Nettoyage, pansement compressif, évaluation suture (RP).' });
+        }
       }
 
+      // Membres inférieurs (détaillés)
+      if (isLowerExt(location)) {
+        if (isThigh(location)) {
+          if (findings.deformity || p >= 8) out.push({ tag: 'Fracture fémur (suspecte)', priority: 1, advice: 'Douleur intense, déformation → immobiliser, évacuation.' });
+          if (p >= 5) out.push({ tag: 'Déchirure quadri/ischios (possible)', priority: 3, advice: 'RICE, éviter appui, réévaluation.' });
+          if (p < 5) out.push({ tag: 'Contusion cuisse', priority: 4, advice: 'Glace/élévation.' });
+        }
+        if (isLeg(location)) {
+          if (findings.deformity || p >= 8) out.push({ tag: 'Fracture tibia/péroné (suspecte)', priority: 2, advice: 'Attelle, contrôle saignement, évacuation.' });
+          else if (p >= 5) {
+            out.push({ tag: 'Entorse cheville sévère (possible)', priority: 3, advice: 'RICE, immobilisation RP.' });
+            out.push({ tag: 'Fracture malléolaire non déplacée (possible)', priority: 3, advice: 'Douleur osseuse, imagerie (RP).' });
+          } else {
+            out.push({ tag: 'Contusion jambe', priority: 4, advice: 'Glace, pansement si abrasion.' });
+          }
+        }
+      }
+
+      // Dos
       if (location === 'back') {
-        if (painSeverity >= 7 || findings.deformity || findings.lossOfConsciousness) out.push({ tag: 'Lésion rachidienne suspecte', priority: 1, advice: 'Immobiliser colonne, ne pas mobiliser, évacuation.' });
-        else out.push({ tag: 'Douleur dorsale / contusion', priority: 3, advice: 'Repos, chaleur douce, réévaluation.' });
+        if (p >= 7 || findings.deformity || findings.lossOfConsciousness) out.push({ tag: 'Atteinte rachidienne (suspecte)', priority: 1, advice: 'Immobiliser, éviter rotations, évacuation.' });
+        else out.push({ tag: 'Lombalgie/contusion dorsale', priority: 3, advice: 'Repos, chaleur douce, antalgiques RP.' });
       }
 
+      // Peau
       if (location === 'skin') {
-        if (painSeverity >= 6 || findings.bleeding) out.push({ tag: 'Plaie ouverte / lacération', priority: 2, advice: 'Nettoyer (RP), compresser, envisager suture (RP) selon taille.' });
-        else out.push({ tag: 'Égratignure / abrasion', priority: 4, advice: 'Nettoyage doux et pansement.' });
+        if (p >= 6 || findings.bleeding) out.push({ tag: 'Lacération / avulsion', priority: 2, advice: 'Nettoyage, compresser, suture (RP) selon taille.' });
+        else out.push({ tag: 'Abrasions/éraflures', priority: 4, advice: 'Nettoyage doux, pansement.' });
       }
 
       if (!out.length) out.push({ tag: 'Évaluation non spécifique', priority: 4, advice: 'Surveillance, éviter activité, réévaluation.' });
 
+      // Modificateurs généraux
       const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
       const extremeAge = Number.isFinite(age) && (age < 18 || age > 65);
       const anticoag = !!(hx && hx.anticoagulants);
-      const severePainPersist = (delayHours >= 24) && (painSeverity >= 6);
+      const persist = (delayHours >= 24) && (p >= 6);
 
       for (const item of out) {
-        let p = item.priority;
-        if (anticoag && (location === 'head' || location === 'neck' || findings.lossOfConsciousness)) p = 1;
-        if (extremeAge && p > 1) p -= 1;
-        if (severePainPersist && p > 1) p -= 1;
-        item.priority = clamp(p, 1, 4);
+        let pr = item.priority;
+        if (anticoag && (location === 'head' || location === 'neck' || findings.lossOfConsciousness)) pr = 1;
+        if (extremeAge && pr > 1) pr -= 1;
+        if (persist && pr > 1) pr -= 1;
+        item.priority = clamp(pr, 1, 4);
       }
 
       out.sort((a, b) => a.priority - b.priority);
@@ -441,4 +514,3 @@
   </script>
 </body>
 </html>
-
