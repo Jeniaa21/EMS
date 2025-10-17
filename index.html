@@ -1,328 +1,328 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GTA‑RP Trauma Triage — Pré‑diagnostic</title>
+  <title>Triage blessures — prototype</title>
   <style>
-    :root {
-      --bg: #0f172a; /* slate-900 */
-      --card: #0b1220; /* darker */
-      --text: #e2e8f0; /* slate-200 */
-      --muted: #94a3b8; /* slate-400 */
-      --accent: #6366f1; /* indigo-500 */
-      --accent-2: #22c55e; /* green-500 */
-      --warn: #f59e0b; /* amber-500 */
-      --danger: #ef4444; /* red-500 */
-      --border: #1f2937; /* gray-800 */
-      --chip: #111827; /* gray-900 */
+    :root{
+      --bg:#0f172a;/* slate-900 */
+      --panel:#111827ee; /* gray-900 */
+      --card:#111827; /* gray-900 */
+      --muted:#94a3b8;/* slate-400 */
+      --text:#e5e7eb;/* gray-200 */
+      --accent:#22c55e;/* green-500 */
+      --warn:#f59e0b;/* amber-500 */
+      --danger:#ef4444;/* red-500 */
+      --info:#3b82f6;/* blue-500 */
+      --border:#1f2937;/* gray-800 */
     }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: radial-gradient(1200px 600px at 20% -10%, #1e293b 0, #0b1020 60%, #060913 100%);
-      color: var(--text);
-    }
-    .container { max-width: 980px; margin: 40px auto; padding: 0 16px; }
-    header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:20px; }
-    .brand { display:flex; align-items:center; gap:12px; }
-    .logo { width:40px; height:40px; border-radius:12px; background: linear-gradient(135deg, var(--accent), #8b5cf6); box-shadow: 0 10px 25px rgba(99,102,241,.35); }
-    h1 { font-size: clamp(22px, 3vw, 28px); margin:0; letter-spacing: .2px; }
-    .card { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015)); border:1px solid var(--border); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
-    .grid { display:grid; grid-template-columns: 1fr; gap: 16px; }
-    @media (min-width: 900px) { .grid { grid-template-columns: 1.1fr .9fr; } }
-    label { font-size: 14px; color: var(--muted); display:block; margin-bottom:6px; }
-    textarea, select, input[type="text"] { width:100%; background:#0a0f1b; color:var(--text); border:1px solid #192133; padding:10px 12px; border-radius:12px; outline:none; }
-    textarea:focus, select:focus, input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,.25); }
-    .range-wrap { background:#0a0f1b; border:1px solid #192133; padding:12px; border-radius:12px; }
-    input[type="range"] { width:100%; }
-    .row { display:flex; flex-wrap:wrap; gap:12px; }
-    .chip { display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:12px; background: var(--chip); border:1px solid #1f2937; font-size: 14px; }
-    .btns { display:flex; gap:10px; flex-wrap:wrap; }
-    .btn { background: var(--accent); color:white; border:none; padding:10px 14px; border-radius:14px; cursor:pointer; font-weight:600; letter-spacing:.2px; }
-    .btn.secondary { background:transparent; border:1px solid #334155; color: var(--text); }
-    .btn.ghost { background:transparent; color: var(--muted); }
-    .section-title { font-size:18px; font-weight:700; margin: 6px 0 10px; }
-    .results { display:grid; gap:12px; }
-    .result { border:1px solid #1f2937; border-left:4px solid var(--accent); padding:12px; border-radius:12px; background:#0a0f1b; }
-    .prio { font-size:12px; color:#cbd5e1; opacity:.9; }
-    .tag { font-weight:700; }
-    .advice { color:#cbd5e1; margin-top:4px; }
-    .callout { background: rgba(245, 158, 11, .1); border:1px solid rgba(245, 158, 11, .35); color:#fde68a; border-radius:12px; padding:10px 12px; font-size:14px; }
-    footer { margin-top: 16px; color: #94a3b8; font-size: 12px; }
-    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; background:#0b1220; border:1px solid #1f2937; padding:2px 6px; border-radius:6px; }
-    .titlebar { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px; }
-    .pill { font-size:12px; padding:6px 10px; border:1px solid #334155; border-radius:999px; color:#a5b4fc; background: rgba(99,102,241,.08); }
-    .success { border-left-color: var(--accent-2); }
-    .danger { border-left-color: var(--danger); }
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(1200px 600px at 10% -10%,#1f2937,transparent),radial-gradient(1200px 600px at 110% -10%,#0b1020,transparent),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;}
+    .container{max-width:980px;margin:32px auto;padding:0 16px}
+    header{display:flex;gap:12px;align-items:center;margin-bottom:20px}
+    header h1{font-size: clamp(22px, 4vw, 32px);margin:0}
+    header .beta{font-size:12px;color:var(--muted);padding:4px 8px;border:1px solid var(--border);border-radius:999px}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:900px){.grid{grid-template-columns:1.1fr 0.9fr}}
+    .card{background:linear-gradient(180deg,rgba(17,24,39,0.9),rgba(17,24,39,0.7));border:1px solid var(--border);border-radius:16px;padding:18px;backdrop-filter: blur(6px);}
+    .card h2{margin:0 0 12px 0;font-size:18px}
+    label{display:block;margin:10px 0 6px;font-weight:600}
+    select, input[type="text"], textarea{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0b1220;color:var(--text)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .tags{display:flex;flex-wrap:wrap;gap:10px}
+    .tag{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--border);background:#0b1220;padding:8px 10px;border-radius:12px}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    button{appearance:none;border:none;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+    .primary{background:var(--info);color:white}
+    .secondary{background:#0b1220;color:var(--text);border:1px solid var(--border)}
+    .meter{height:12px;border-radius:999px;background:#0b1220;border:1px solid var(--border);overflow:hidden}
+    .bar{height:100%;width:0%}
+    .pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid var(--border);color:var(--muted);font-size:12px}
+    .result{font-size:15px;line-height:1.5}
+    .muted{color:var(--muted)}
+    .kicker{font-size:12px;color:var(--muted);margin:0}
+    .list{margin:8px 0 0 18px}
+    footer{margin:24px 0;color:var(--muted);font-size:12px}
+    .danger{color:var(--danger)}
+    .warn{color:var(--warn)}
+    .ok{color:var(--accent)}
+    .panel{border:1px dashed var(--border);border-radius:12px;padding:10px}
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <h1>GTA‑RP Trauma Triage — Outil de pré‑diagnostic</h1>
-          <div class="pill" aria-live="polite">Roleplay uniquement · Ne remplace pas un avis médical réel</div>
-        </div>
-      </div>
-      <div class="row">
-        <button class="btn ghost" id="btn-export-json" title="Exporter le cas (JSON)">Exporter</button>
-        <button class="btn ghost" id="btn-print" title="Imprimer / PDF">Imprimer</button>
-      </div>
+      <h1>Triage de blessures (prototype)</h1>
+      <span class="beta">Ne remplace pas un avis médical</span>
     </header>
 
     <div class="grid">
-      <!-- Formulaire -->
-      <section class="card" aria-labelledby="form-title">
-        <div class="titlebar">
-          <div class="section-title" id="form-title">Entrée patient RP</div>
-          <div class="prio">Remplissez les champs puis cliquez <span class="kbd">Calculer</span></div>
+      <div class="card">
+        <h2>Décrivez la situation</h2>
+        <p class="kicker">Cet outil <strong>oriente</strong> et ne pose pas de diagnostic. En cas de doute, appelez le 15 (ou 112).</p>
+        
+        <label for="location">Zone concernée</label>
+        <select id="location">
+          <option value="">— Choisir —</option>
+          <option value="tete">Tête / visage</option>
+          <option value="cou">Cou / nuque</option>
+          <option value="epaule_bras">Épaule / bras</option>
+          <option value="poignet_main">Poignet / main / doigts</option>
+          <option value="dos">Dos</option>
+          <option value="hanche_cuisse">Hanche / cuisse</option>
+          <option value="genou">Genou</option>
+          <option value="cheville_pied">Cheville / pied</option>
+          <option value="thorax">Thorax</option>
+          <option value="abdomen">Abdomen</option>
+          <option value="peau">Peau (coupure / brûlure)</option>
+        </select>
+
+        <label>Circonstances (sélection multiple)</label>
+        <div class="tags">
+          <label class="tag"><input type="checkbox" value="chute"/> Chute</label>
+          <label class="tag"><input type="checkbox" value="torsion"/> Torsion / faux pas</label>
+          <label class="tag"><input type="checkbox" value="coup_direct"/> Coup direct</label>
+          <label class="tag"><input type="checkbox" value="surmenage"/> Surmenage / effort répété</label>
+          <label class="tag"><input type="checkbox" value="sport"/> Pendant le sport</label>
+          <label class="tag"><input type="checkbox" value="route"/> Accident de la route</label>
+          <label class="tag"><input type="checkbox" value="objet_tranchant"/> Objet tranchant</label>
+          <label class="tag"><input type="checkbox" value="brulure"/> Brûlure / chaleur</label>
         </div>
 
-        <div class="row" style="gap:16px">
-          <div style="flex:1 1 100%">
-            <label for="incident">Que s'est‑il passé ? (résumé court)</label>
-            <textarea id="incident" rows="3" placeholder="Ex.: chute de moto à 80 km/h, impact tête/épaule, casque porté"></textarea>
+        <!-- Champs complémentaires -->
+        <div class="row">
+          <div>
+            <label for="age">Âge (RP)</label>
+            <input type="text" id="age" placeholder="ex. 28"/>
           </div>
-
-          <div style="flex:1 1 220px; min-width: 220px;">
-            <label for="location">Localisation principale de la douleur</label>
-            <select id="location">
-              <option value="head">Tête / Crâne</option>
-              <option value="neck">Cou / Gorge</option>
-              <option value="chest">Thorax / Poitrine</option>
-              <option value="abdomen">Abdomen / Ventre</option>
-              <option value="pelvis">Bassin</option>
-              <option value="upper_ext">Membres supérieurs</option>
-              <option value="lower_ext">Membres inférieurs</option>
-              <option value="back">Dos</option>
-              <option value="skin">Peau / Plaies</option>
-            </select>
+          <div>
+            <label for="delay">Délai depuis l'incident (heures)</label>
+            <input type="text" id="delay" placeholder="ex. 3"/>
           </div>
+        </div>
+        <label>ATCD (cocher si présents)</label>
+        <div class="tags">
+          <label class="tag"><input type="checkbox" id="hx-anticoag"/> Anticoagulants/AA</label>
+          <label class="tag"><input type="checkbox" id="hx-diabetes"/> Diabète</label>
+          <label class="tag"><input type="checkbox" id="hx-immuno"/> Immunodépression</label>
+        </div>
 
-          <div style="flex:1 1 260px; min-width: 260px;">
-            <label for="pain">Niveau de douleur (1–10)</label>
-            <div class="range-wrap">
-              <input id="pain" type="range" min="1" max="10" value="5" step="1" />
-              <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:12px; color:var(--muted)">
-                <span>1</span><span>5</span><span>10</span>
-              </div>
-              <div id="pain-label" style="margin-top:6px; font-weight:600;">Sévérité: 5 — Modérée</div>
+        <div class="row">
+          <div>
+            <label for="pain">Douleur (1–10)</label>
+            <input id="pain" type="range" min="1" max="10" step="1" value="3"/>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+              <span class="pill">Niveau : <strong id="painVal">3</strong> / 10</span>
+              <div class="meter" style="flex:1"><div id="bar" class="bar"></div></div>
+            </div>
+          </div>
+          <div>
+            <label>Signes d'alerte (urgents)</label>
+            <div class="panel">
+              <label><input type="checkbox" class="flag" value="saignement"/> Saignement abondant</label><br/>
+              <label><input type="checkbox" class="flag" value="deformation"/> Déformation évidente / os apparent</label><br/>
+              <label><input type="checkbox" class="flag" value="appui"/> Impossible de marcher / s'appuyer</label><br/>
+              <label><input type="checkbox" class="flag" value="conscience"/> Perte de connaissance / confusion</label><br/>
+              <label><input type="checkbox" class="flag" value="respir"/> Difficulté à respirer / douleur thoracique</label><br/>
+              <label><input type="checkbox" class="flag" value="engourdissement"/> Paralysie / engourdissement étendu</label>
             </div>
           </div>
         </div>
 
-        <div style="margin-top:10px">
-          <label>Signes visibles (cocher si présents)</label>
-          <div class="row">
-            <label class="chip"><input type="checkbox" id="f-bleeding" /> Saignement important</label>
-            <label class="chip"><input type="checkbox" id="f-deformity" /> Déformation</label>
-            <label class="chip"><input type="checkbox" id="f-loc" /> Perte de conscience / confusion</label>
-          </div>
+        <div class="actions">
+          <button class="primary" id="eval">Évaluer</button>
+          <button class="secondary" id="reset">Réinitialiser</button>
         </div>
+      </div>
 
-        <div class="btns" style="margin-top:14px">
-          <button class="btn" id="btn-calc">Calculer</button>
-          <button class="btn secondary" id="btn-reset" type="button">Réinitialiser</button>
-        </div>
-      </section>
-
-      <!-- Résultats -->
-      <section class="card" aria-labelledby="res-title">
-        <div class="titlebar">
-          <div class="section-title" id="res-title">Résultats (pré‑diagnostic)</div>
-          <div class="prio" id="meta-count">—</div>
-        </div>
-        <div id="results" class="results" aria-live="polite"></div>
-        <div id="no-results" class="callout" style="display:none; margin-top:8px">Aucun résultat. Saisissez des informations puis cliquez <span class="kbd">Calculer</span>.</div>
-        <div class="callout" style="margin-top:10px">
-          <strong>Avertissement :</strong> outil pour <em>roleplay GTA RP</em>. Ne pas utiliser pour décisions médicales réelles.
-        </div>
-      </section>
+      <div class="card">
+        <h2>Résultat</h2>
+        <div id="result" class="result muted">Renseignez les champs à gauche puis cliquez sur « Évaluer ».</div>
+      </div>
     </div>
 
     <footer>
-      <p>© <span id="year"></span> — GTA‑RP Trauma Triage. Heuristiques simples inspirées des principes de triage (ABCD/MARCH). Utilisation RP uniquement.</p>
+      <p>⚠️ Cet outil est expérimental. Il ne remplace pas un professionnel de santé. En France, composez le <strong>15</strong> (SAMU) ou le <strong>112</strong> en cas d'urgence.</p>
     </footer>
   </div>
 
-  <script>
-    const els = {
-      incident: document.getElementById('incident'),
-      location: document.getElementById('location'),
-      pain: document.getElementById('pain'),
-      painLabel: document.getElementById('pain-label'),
-      fBleeding: document.getElementById('f-bleeding'),
-      fDeformity: document.getElementById('f-deformity'),
-      fLoc: document.getElementById('f-loc'),
-      btnCalc: document.getElementById('btn-calc'),
-      btnReset: document.getElementById('btn-reset'),
-      btnExport: document.getElementById('btn-export-json'),
-      btnPrint: document.getElementById('btn-print'),
-      results: document.getElementById('results'),
-      noResults: document.getElementById('no-results'),
-      metaCount: document.getElementById('meta-count'),
+<script>
+  const pain = document.getElementById('pain');
+  const painVal = document.getElementById('painVal');
+  const bar = document.getElementById('bar');
+  function updateMeter(){
+    const v = Number(pain.value);
+    painVal.textContent = v;
+    const pct = (v/10)*100;
+    bar.style.width = pct + '%';
+    bar.style.background = v>=8? 'var(--danger)' : v>=5? 'var(--warn)' : 'var(--accent)';
+  }
+  pain.addEventListener('input', updateMeter); updateMeter();
+
+  const locationEl = document.getElementById('location');
+  const result = document.getElementById('result');
+  const ageEl = document.getElementById('age');
+  const delayEl = document.getElementById('delay');
+  const hxAnticoagEl = document.getElementById('hx-anticoag');
+  const hxDiabEl = document.getElementById('hx-diabetes');
+  const hxImmunoEl = document.getElementById('hx-immuno');
+
+  const hypotheses = {
+    'cheville_pied':{ torsion:'Entorse de cheville (ligaments)', chute:'Contusion / entorse', coup_direct:'Contusion / fracture possible' },
+    'genou':{ torsion:'Entorse du genou (LLI/LCA) possible', chute:'Contusion / lésion méniscale', coup_direct:'Contusion / fracture possible' },
+    'epaule_bras':{ chute:'Luxation / contusion', coup_direct:'Contusion / fracture possible', surmenage:'Tendinite (coiffe) possible' },
+    'poignet_main':{ chute:'Fracture du poignet / entorse', objet_tranchant:'Plaie — soigner et vérifier', coup_direct:'Contusion' },
+    'dos':{ surmenage:'Lombalgie mécanique', faux:'Lumbago' },
+    'hanche_cuisse':{ chute:'Contusion / déchirure', surmenage:'Tendinite / élongation' },
+    'tete':{ coup_direct:'Commotion possible', chute:'Commotion / plaie' },
+    'cou':{ coup_direct:'Coup du lapin (entorse cervicale)', chute:'Entorse cervicale' },
+    'thorax':{ coup_direct:'Contusion costale / fracture', respir:'Douleur thoracique — urgence si associée à gêne respiratoire' },
+    'abdomen':{ coup_direct:'Contusion abdominale — surveiller', chute:'Traumatisme abdominal' },
+    'peau':{ objet_tranchant:'Plaie cutanée', brulure:'Brûlure cutanée' }
+  };
+
+  function evaluate(){
+    const zone = locationEl.value;
+    const circ = Array.from(document.querySelectorAll('.tags input[type=checkbox]'))
+                      .filter(i=>!i.id) // exclure ATCD tags
+                      .filter(i=>i.checked).map(i=>i.value);
+    const flags = Array.from(document.querySelectorAll('.flag:checked')).map(i=>i.value);
+    const v = Number(pain.value);
+
+    // nouveaux champs
+    const age = parseInt(ageEl?.value||'',10);
+    const delayH = parseInt(delayEl?.value||'',10) || 0;
+    const hxAnticoag = !!(hxAnticoagEl && hxAnticoagEl.checked);
+    const hxDiab = !!(hxDiabEl && hxDiabEl.checked);
+    const hxImmuno = !!(hxImmunoEl && hxImmunoEl.checked);
+
+    // 0) Règle spéciale: anticoagulants + tête/cou ou perte de connaissance => urgence
+    if(hxAnticoag && (['tete','cou'].includes(zone) || flags.includes('conscience'))){
+      result.innerHTML = `
+        <p class="danger"><strong>Facteur de risque + traumatisme tête/cou :</strong> sous anticoagulants.</p>
+        <p>Rendez-vous aux <strong>urgences</strong> pour évaluation.</p>
+      `;
+      return;
+    }
+
+    // 1) Red flags => emergencies
+    if(flags.length>0){
+      result.innerHTML = `
+        <p class="danger"><strong>Urgence identifiée.</strong> Un ou plusieurs signes d'alerte sont cochés.</p>
+        <p>Appelez le <strong>15</strong> (ou <strong>112</strong>) ou rendez-vous immédiatement aux urgences.</p>
+        <ul class="list">${flags.map(f=>`<li>${labelFlag(f)}</li>`).join('')}</ul>
+      `;
+      return;
+    }
+
+    // 2) Règle douleur
+    if(v >= 5){
+      const hypo = guess(zone, circ);
+      result.innerHTML = `
+        <p class="warn"><strong>Douleur ${v}/10 :</strong> comme convenu, <strong>allez à l'hôpital</strong> pour des vérifications.</p>
+        ${hypo? `<p>Hypothèses fréquentes selon vos réponses : <em>${hypo}</em>.</p>`:''}
+        ${selfCare(zone)}
+      `;
+      return;
+    }
+
+    // 3) Scoring simple pour <5 + modificateurs
+    let score = v; // base
+    if(circ.includes('route')) score += 2;
+    if(circ.includes('chute')) score += 1;
+    if(['tete','cou','thorax','abdomen'].includes(zone)) score += 2;
+
+    // Modificateurs heuristiques
+    const extremeAge = Number.isFinite(age) && (age < 18 || age > 65);
+    if(extremeAge) score += 1;
+    if((delayH >= 24) && v >= 6) score += 1; // douleur persistante
+    if(hxImmuno || hxDiab) score += 0; // informatif ici; à affiner selon RP
+
+    const hypo = guess(zone, circ);
+
+    if(score >= 7){
+      result.innerHTML = `
+        <p class="warn"><strong>Prudence :</strong> consultez un professionnel (médecin/urgences sans RDV) dans les <strong>24–48 h</strong>.</p>
+        ${hypo? `<p>Hypothèses fréquentes : <em>${hypo}</em>.</p>`:''}
+        ${selfCare(zone)}
+      `;
+    } else {
+      result.innerHTML = `
+        <p class="ok"><strong>Probablement bénin :</strong> vous pouvez débuter une prise en charge à domicile et surveiller pendant 48 h.</p>
+        ${hypo? `<p>Hypothèses fréquentes : <em>${hypo}</em>.</p>`:''}
+        ${selfCare(zone)}
+      `;
+    }
+  }
+
+  function labelFlag(key){(key){
+    const map={
+      saignement:'Saignement abondant',
+      deformation:'Déformation évidente / os apparent',
+      appui:"Impossible de marcher / s'appuyer",
+      conscience:'Perte de connaissance / confusion',
+      respir:'Difficulté à respirer / douleur thoracique',
+      engourdissement:'Paralysie / engourdissement étendu'
     };
+    return map[key]||key;
+  }
 
-    // Pain label update
-    function updatePainLabel() {
-      const v = Number(els.pain.value);
-      const band = v <= 3 ? 'Faible' : v <= 7 ? 'Modérée' : 'Sévère';
-      els.painLabel.textContent = `Sévérité: ${v} — ${band}`;
+  function guess(zone, circ){
+    if(!zone) return '';
+    const h = hypotheses[zone]||{};
+    // take first matching circumstance suggestion
+    for(const c of circ){
+      if(h[c]) return h[c];
     }
-    els.pain.addEventListener('input', updatePainLabel);
-    updatePainLabel();
+    // fallback generic
+    const generic = {
+      'cheville_pied':'Entorse ou contusion',
+      'genou':'Entorse ou contusion',
+      'epaule_bras':'Contusion, luxation ou fracture',
+      'poignet_main':'Entorse ou fracture',
+      'dos':'Lombalgie mécanique',
+      'hanche_cuisse':'Contusion ou déchirure',
+      'tete':'Commotion / plaie',
+      'cou':'Entorse cervicale',
+      'thorax':'Contusion costale',
+      'abdomen':'Contusion abdominale',
+      'peau':'Plaie ou brûlure'
+    };
+    return generic[zone]||'';
+  }
 
-    // Core pre-diagnosis engine (heuristics for RP only)
-    function computePreDiagnosis({ incident, location, pain, findings }) {
-      const out = [];
-      const painSeverity = Number(pain);
+  function selfCare(zone){
+    let tips = [
+      'Repos relatif 24–48 h et immobiliser si besoin',
+      'Glace 15–20 min, 3–4×/jour (protégée par un linge)',
+      'Antalgiques usuels si pas de contre-indication',
+      'Surveiller : douleur en hausse, fièvre, gonflement, perte de fonction'
+    ];
+    if(zone==='peau') tips = [
+      'Nettoyer à l’eau et au savon, puis désinfecter',
+      'Compression si saignement, pansement propre',
+      'Brûlure : refroidir à l’eau tempérée 10–20 min',
+      'Vérifier la vaccination antitétanique'
+    ];
+    return `<div class="panel"><strong>Conseils initiaux :</strong><ul class="list">${tips.map(t=>`<li>${t}</li>`).join('')}</ul></div>`;
+  }
 
-      // Immediate red flags
-      if (findings.bleeding) out.push({ tag: 'Hémorragie', priority: 1, advice: 'Comprimer la plaie, pansement compressif, évacuation rapide.' });
-      if (findings.lossOfConsciousness) out.push({ tag: 'Traumatisme crânien suspect', priority: 1, advice: "Surveillance neurologique, immobilisation tête/cou si mécanisme violent, évacuation." });
-
-      // Head / neck
-      if (location === 'head' || location === 'neck') {
-        if (painSeverity >= 8) {
-          out.push({ tag: 'Traumatisme crânien modéré/sévère', priority: 2, advice: 'Céphalées intenses, vomissements, troubles -> évacuer.' });
-        } else if (painSeverity >= 4) {
-          out.push({ tag: 'Commotion / contusion', priority: 3, advice: 'Repos, glace, surveillance 24h RP.' });
-        } else {
-          out.push({ tag: 'Contusion légère', priority: 4, advice: 'Glace locale, repos, réévaluer.' });
-        }
-      }
-
-      // Chest
-      if (location === 'chest') {
-        if (painSeverity >= 8 || findings.deformity) {
-          out.push({ tag: 'Blessure thoracique grave (pneumothorax/contusion costale)', priority: 1, advice: 'Détresse respi possible — position demi-assise, évacuation urgente.' });
-        } else if (painSeverity >= 5) {
-          out.push({ tag: 'Fracture costale ou contusion', priority: 2, advice: 'Immobiliser si possible, analgésie RP, surveiller dyspnée.' });
-        } else {
-          out.push({ tag: 'Douleur thoracique mineure', priority: 3, advice: 'Repos et surveillance.' });
-        }
-      }
-
-      // Abdomen / pelvis
-      if (location === 'abdomen' || location === 'pelvis') {
-        if (painSeverity >= 7 || findings.bleeding) {
-          out.push({ tag: "Hémorragie interne / lésion viscérale (suspectée)", priority: 1, advice: "Transport rapide, surveiller signes de choc (pâleur, sueurs)." });
-        } else if (painSeverity >= 4) {
-          out.push({ tag: 'Contusion abdominale', priority: 2, advice: 'Surveillance douleur, défense/rigidité -> évacuation RP.' });
-        } else {
-          out.push({ tag: 'Douleur abdominale mineure', priority: 4, advice: 'Repos, hydratation, réévaluation.' });
-        }
-      }
-
-      // Extremities
-      if (location === 'upper_ext' || location === 'lower_ext') {
-        if (findings.deformity || painSeverity >= 8) {
-          out.push({ tag: 'Fracture possible', priority: 2, advice: 'Immobiliser (attelle), contrôler saignement, évacuation pour imagerie (RP).' });
-        } else if (painSeverity >= 5) {
-          out.push({ tag: 'Entorse / contusion sévère', priority: 3, advice: 'RICE (Repos, Ice, Compression, Élévation).' });
-        } else {
-          out.push({ tag: 'Contusion / éraflure', priority: 4, advice: 'Nettoyage, pansement, surveillance.' });
-        }
-      }
-
-      // Back
-      if (location === 'back') {
-        if (painSeverity >= 7 || findings.deformity || findings.lossOfConsciousness) {
-          out.push({ tag: 'Lésion rachidienne suspecte', priority: 1, advice: 'Immobiliser colonne, ne pas mobiliser, évacuation.' });
-        } else {
-          out.push({ tag: 'Douleur dorsale / contusion', priority: 3, advice: 'Repos, chaleur douce, réévaluation.' });
-        }
-      }
-
-      // Skin
-      if (location === 'skin') {
-        if (painSeverity >= 6 || findings.bleeding) {
-          out.push({ tag: 'Plaie ouverte / lacération', priority: 2, advice: 'Nettoyer (RP), compresser, envisager suture (RP) selon taille.' });
-        } else {
-          out.push({ tag: 'Égratignure / abrasion', priority: 4, advice: 'Nettoyage doux et pansement.' });
-        }
-      }
-
-      if (!out.length) out.push({ tag: 'Évaluation non spécifique', priority: 4, advice: 'Surveillance, éviter activité, réévaluation.' });
-
-      out.sort((a, b) => a.priority - b.priority);
-      return out;
-    }
-
-    function renderResults(list) {
-      els.results.innerHTML = '';
-      if (!list || !list.length) {
-        els.noResults.style.display = 'block';
-        els.metaCount.textContent = '—';
-        return;
-      }
-      els.noResults.style.display = 'none';
-      els.metaCount.textContent = `${list.length} hypothèse(s)`;
-      for (const item of list) {
-        const div = document.createElement('div');
-        div.className = 'result ' + (item.priority === 1 ? 'danger' : item.priority === 2 ? 'success' : '');
-        div.innerHTML = `
-          <div class="tag">${item.tag}</div>
-          <div class="advice">${item.advice}</div>
-          <div class="prio">Priorité: ${item.priority}</div>
-        `;
-        els.results.appendChild(div);
-      }
-    }
-
-    function getFormValues() {
-      return {
-        incident: els.incident.value.trim(),
-        location: els.location.value,
-        pain: Number(els.pain.value),
-        findings: {
-          bleeding: els.fBleeding.checked,
-          deformity: els.fDeformity.checked,
-          lossOfConsciousness: els.fLoc.checked,
-        }
-      };
-    }
-
-    function calculate(e) {
-      e && e.preventDefault();
-      const payload = getFormValues();
-      const res = computePreDiagnosis(payload);
-      renderResults(res);
-    }
-
-    function resetForm() {
-      els.incident.value = '';
-      els.location.value = 'head';
-      els.pain.value = 5; updatePainLabel();
-      els.fBleeding.checked = false;
-      els.fDeformity.checked = false;
-      els.fLoc.checked = false;
-      els.results.innerHTML = '';
-      els.noResults.style.display = 'block';
-      els.metaCount.textContent = '—';
-    }
-
-    function exportJSON() {
-      const data = { ...getFormValues(), results: Array.from(els.results.querySelectorAll('.result .tag')).map((el, i) => ({
-        tag: el.textContent, priority: Number(els.results.querySelectorAll('.result .prio')[i].textContent.replace(/[^0-9]/g,''))
-      })), timestamp: new Date().toISOString() };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = `triage_case_${Date.now()}.json`;
-      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    }
-
-    document.getElementById('year').textContent = new Date().getFullYear();
-    els.btnCalc.addEventListener('click', calculate);
-    els.btnReset.addEventListener('click', resetForm);
-    els.btnExport.addEventListener('click', exportJSON);
-    els.btnPrint.addEventListener('click', () => window.print());
-
-    // Initial state
-    resetForm();
-  </script>
+  document.getElementById('eval').addEventListener('click', evaluate);
+  document.getElementById('reset').addEventListener('click', ()=>{ 
+    document.querySelectorAll('input[type=checkbox]').forEach(i=> i.checked=false);
+    locationEl.value='';
+    pain.value=3; updateMeter();
+    if(ageEl) ageEl.value='';
+    if(delayEl) delayEl.value='';
+    result.classList.add('muted');
+    result.innerHTML='Renseignez les champs à gauche puis cliquez sur « Évaluer ».';
+  });
+    locationEl.value='';
+    pain.value=3; updateMeter();
+    result.classList.add('muted');
+    result.innerHTML='Renseignez les champs à gauche puis cliquez sur « Évaluer ».';
+  });
+</script>
 </body>
 </html>
