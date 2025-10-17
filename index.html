@@ -29,7 +29,8 @@
     h1 { font-size: clamp(22px, 3vw, 28px); margin:0; letter-spacing: .2px; }
     .card { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015)); border:1px solid var(--border); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
     .grid { display:grid; grid-template-columns: 1fr; gap: 16px; }
-    @media (min-width: 900px) { .grid { grid-template-columns: 1.1fr .9fr; } }
+    @media (min-width: 900px) { 
+    .grid { grid-template-columns: 1.1fr .9fr; } }
     label { font-size: 14px; color: var(--muted); display:block; margin-bottom:6px; }
     textarea, select, input[type="text"] { width:100%; background:#0a0f1b; color:var(--text); border:1px solid #192133; padding:10px 12px; border-radius:12px; outline:none; }
     textarea:focus, select:focus, input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,.25); }
@@ -38,7 +39,7 @@
     .row { display:flex; flex-wrap:wrap; gap:12px; }
     .chip { display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:12px; background: var(--chip); border:1px solid #1f2937; font-size: 14px; }
     .btns { display:flex; gap:10px; flex-wrap:wrap; }
-    .btn { background: var(--accent); color:white; border:none; padding:10px 14px; border-radius:14px; cursor:pointer; font-weight:600; letter-spacing:.2px; }
+    .btn { background:#6366f126; color:white; border: 1px solid #6366f1; padding:10px 14px; border-radius:14px; cursor:pointer; font-weight:600; letter-spacing:.2px; }
     .btn.secondary { background:transparent; border:1px solid #334155; color: var(--text); }
     .btn.ghost { background:transparent; color: var(--muted); }
     .section-title { font-size:18px; font-weight:700; margin: 6px 0 10px; }
@@ -451,5 +452,6 @@
   </script>
 </body>
 </html>
+
 
 
