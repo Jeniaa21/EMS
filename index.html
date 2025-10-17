@@ -62,8 +62,8 @@
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
-          <h1>GTA-RP Trauma Triage — Outil de pré-diagnostic</h1>
-          <div class="pill" aria-live="polite">Roleplay uniquement · Ne remplace pas un avis médical réel</div>
+          <h1>Trauma Triage — Outil de <strong>pré</strong>-diagnostic</h1>
+          <div class="pill" aria-live="polite">Diagnostique d'intervention rapide· Ne remplace pas un avis médical poussé à l'hopital</div>
         </div>
       </div>
       <div class="row">
@@ -116,7 +116,7 @@
         <!-- Champs complémentaires -->
         <div class="row" style="margin-top:10px; gap:12px">
           <div style="flex:1 1 160px; min-width:160px;">
-            <label for="age">Âge (RP)</label>
+            <label for="age">Âge</label>
             <input type="text" id="age" placeholder="ex. 28" />
           </div>
           <div style="flex:1 1 200px; min-width:200px;">
@@ -163,7 +163,7 @@
     </div>
 
     <footer>
-      <p>© <span id="year"></span> — GTA-RP Trauma Triage. Heuristiques simples inspirées des principes de triage (ABCD/MARCH). Utilisation RP uniquement.</p>
+      <p>© <span id="year"></span> — Trauma Triage.</p>
     </footer>
   </div>
 
@@ -200,7 +200,7 @@
     els.pain.addEventListener('input', updatePainLabel);
     updatePainLabel();
 
-    // Core pre-diagnosis engine (heuristics for RP only) + Modificateurs (âge/délai/ATCD)
+    // Core pre-diagnosis engine + Modificateurs (âge/délai/ATCD)
     function computePreDiagnosis({ location, pain, findings, age, delayHours, hx }) {
       const out = [];
       const painSeverity = Number(pain);
@@ -424,3 +424,4 @@
   </script>
 </body>
 </html>
+
