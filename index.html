@@ -201,7 +201,7 @@
           <div style="flex:2 1 260px; min-width:260px;">
             <label>ATCD (cocher si présents)</label>
             <div class="row">
-              <label class="chip"><input type="checkbox" id="hx-anticoag" /> Anticoagulants/AA</label>
+              <label class="chip"><input type="checkbox" id="hx-anticoag" /> Anticoagulants</label>
               <label class="chip"><input type="checkbox" id="hx-diabetes" /> Diabète</label>
               <label class="chip"><input type="checkbox" id="hx-immuno" /> Immunodépression</label>
             </div>
@@ -494,17 +494,17 @@
     function copySummary() {
       const v = getFormValues();
       const resCards = els.results.querySelectorAll('.result');
-      let txt = `Résumé RP — Trauma Triage\n`;
+      let txt = `Résumé rapide d'intervention\n`;
       txt += `Incident: ${v.incident || '—'}\n`;
       txt += `Zone: ${v.location}\nDouleur: ${v.pain}/10\n`;
       if (v.age !== undefined) txt += `Âge: ${v.age}\n`;
       if (v.delayHours) txt += `Délai: ${v.delayHours}h\n`;
       const atcd = [];
-      if (v.hx.anticoagulants) atcd.push('anticoagulants/AA');
+      if (v.hx.anticoagulants) atcd.push('anticoagulants');
       if (v.hx.diabetes) atcd.push('diabète');
       if (v.hx.immunodepression) atcd.push('immunodépression');
       if (atcd.length) txt += `ATCD: ${atcd.join(', ')}\n`;
-      if (v.findings.gsw) txt += `Signes: blessure par balle (GSW)\n`;
+      if (v.findings.gsw) txt += `Signes: blessure par balle\n`;
       if (v.findings.bleeding) txt += `Signes: saignement important\n`;
       if (v.findings.deformity) txt += `Signes: déformation\n`;
       if (v.findings.lossOfConsciousness) txt += `Signes: perte de conscience/confusion\n`;
@@ -536,4 +536,5 @@
   </script>
 </body>
 </html>
+
 
