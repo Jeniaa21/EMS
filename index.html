@@ -55,7 +55,7 @@
     .success { border-left-color: var(--accent-2); }
     .danger { border-left-color: var(--danger); }
 
-    /* === Body-map mannequin (segmentée, non superposée) === */
+    /* === Body-map mannequin (segmentée) === */
     .bodymap { display:flex; align-items:center; gap:12px; margin-top:8px; }
     .bodymap .mapwrap {
       background:#0a0f1b; border:1px solid #192133; border-radius:12px;
@@ -98,13 +98,13 @@
         <div class="row" style="gap:16px">
           <div style="flex:1 1 100%">
             <label for="incident">Que s'est-il passé ? (résumé court)</label>
-            <textarea id="incident" rows="3" placeholder="Ex.: chute de moto à 80 km/h, impact tête/épaule, casque porté"></textarea>
+            <textarea id="incident" rows="3" placeholder="Ex.: échange de tirs, impact cuisse G; saignement contrôlé"></textarea>
           </div>
 
           <div style="flex:1 1 220px; min-width: 220px;">
             <label for="location">Localisation principale de la douleur</label>
 
-            <!-- ===== Body-map “mannequin” segmentée ===== -->
+            <!-- ===== Body-map segmentée ===== -->
             <div class="bodymap" aria-label="Carte du corps cliquable">
               <div class="mapwrap">
                 <svg viewBox="0 0 200 360" width="100%" role="img" aria-labelledby="bmTitle">
@@ -214,6 +214,8 @@
             <label class="chip"><input type="checkbox" id="f-bleeding" /> Saignement important</label>
             <label class="chip"><input type="checkbox" id="f-deformity" /> Déformation</label>
             <label class="chip"><input type="checkbox" id="f-loc" /> Perte de conscience / confusion</label>
+            <!-- >>> NOUVEAU : Blessure par balle -->
+            <label class="chip"><input type="checkbox" id="f-gsw" /> Blessure par balle (GSW)</label>
           </div>
         </div>
 
@@ -227,7 +229,7 @@
       <section class="card" aria-labelledby="res-title">
         <div class="titlebar">
           <div class="section-title" id="res-title">Résultats (pré-diagnostic)</div>
-        <div class="prio" id="meta-count">—</div>
+          <div class="prio" id="meta-count">—</div>
         </div>
         <div id="results" class="results" aria-live="polite"></div>
         <div id="no-results" class="callout" style="display:none; margin-top:8px">Aucun résultat. Saisissez des informations puis cliquez <span class="kbd">Calculer</span>.</div>
@@ -256,6 +258,7 @@
       fBleeding: document.getElementById('f-bleeding'),
       fDeformity: document.getElementById('f-deformity'),
       fLoc: document.getElementById('f-loc'),
+      fGSW: document.getElementById('f-gsw'),
       btnCalc: document.getElementById('btn-calc'),
       btnReset: document.getElementById('btn-reset'),
       btnExport: document.getElementById('btn-export-json'),
@@ -294,14 +297,28 @@
     const isUpperExt   = z => isUpperArm(z) || isForearm(z);
     const isLowerExt   = z => isThigh(z) || isLeg(z);
 
-    // Moteur étendu (conserve présentation)
+    // Moteur étendu (intègre GSW)
     function computePreDiagnosis({ location, pain, findings, age, delayHours, hx }) {
       const out = [];
       const p = Number(pain);
 
       // Red flags généraux
       if (findings.bleeding) out.push({ tag: 'Hémorragie active', priority: 1, advice: 'Compression/garrot (RP si anatomie adaptée), évacuation rapide.' });
-      if (findings.lossOfConsciousness) out.push({ tag: 'Altération neurologique (TCC suspect)', priority: 1, advice: 'Surveillance neuro, immobilisation tête/cou si mécanisme violent, évacuation.' });
+      if (findings.lossOfConsciousness) out.push({ tag: 'Altération neurologique (TCC suspect)', priority: 1, advice: 'Surveillance neuro, immobilisation tête/cou, évacuation.' });
+
+      // >>> GSW : toujours P1 + hypothèse par zone
+      if (findings.gsw) {
+        out.push({ tag: 'Blessure par balle (GSW)', priority: 1, advice: "Urgence vitale RP : contrôle hémorragie, pansement occlusif si thorax, évacuation immédiate pour chirurgie." });
+        if (location === 'chest') {
+          out.push({ tag: 'GSW thoracique — pneumo/hémothorax (suspect)', priority: 1, advice: 'Détresse respi possible : pansement occlusif 3 côtés (RP), évacuation.' });
+        } else if (location === 'abdomen' || location === 'pelvis') {
+          out.push({ tag: 'GSW abdominal/pelvien — hémorragie interne (suspecte)', priority: 1, advice: 'Choc possible : transport rapide vers bloc (RP).' });
+        } else if (location === 'head' || location === 'neck') {
+          out.push({ tag: 'GSW tête/cou — lésion critique', priority: 1, advice: 'Airway/saignement : prioriser contrôle, évacuation immédiate.' });
+        } else if (isUpperExt(location) || isLowerExt(location)) {
+          out.push({ tag: 'GSW membre — lésion vasculo-nerveuse (suspecte)', priority: 1, advice: 'Garrot/pression, vérifier motricité/sensibilité distale (RP), évacuation.' });
+        }
+      }
 
       // Tête / cou
       if (location === 'head' || location === 'neck') {
@@ -318,13 +335,13 @@
       // Thorax
       if (location === 'chest') {
         if (p >= 8 || findings.deformity) {
-          out.push({ tag: 'Fractures costales multiples / volet', priority: 1, advice: 'Détresse respi possible, évacuation urgente.' });
+          out.push({ tag: 'Fractures costales multiples / volet', priority: 1, advice: 'Détresse respi possible — évacuation urgente.' });
           out.push({ tag: 'Pneumothorax/contusion pulmonaire (suspect)', priority: 1, advice: 'Douleur latérale + dyspnée → évacuation.' });
         } else if (p >= 5) {
           out.push({ tag: 'Fracture costale isolée', priority: 2, advice: 'Analgésie RP, surveiller dyspnée/toux.' });
           out.push({ tag: 'Contusion costale', priority: 3, advice: 'Repos, glace, respiration contrôlée.' });
         } else {
-          out.push({ tag: 'Douleur pariétale mineure', priority: 4, advice: 'Repos, surveillance.' });
+          out.push({ tag: 'Douleur pariétale mineure', priority: 3, advice: 'Repos, surveillance.' });
         }
       }
 
@@ -441,6 +458,7 @@
           bleeding: els.fBleeding.checked,
           deformity: els.fDeformity.checked,
           lossOfConsciousness: els.fLoc.checked,
+          gsw: els.fGSW.checked,
         }
       };
     }
@@ -453,7 +471,7 @@
       els.pain.value = 5; updatePainLabel();
       els.age.value = ''; els.delay.value = '';
       els.hxAnticoag.checked = false; els.hxDiabetes.checked = false; els.hxImmuno.checked = false;
-      els.fBleeding.checked = false; els.fDeformity.checked = false; els.fLoc.checked = false;
+      els.fBleeding.checked = false; els.fDeformity.checked = false; els.fLoc.checked = false; els.fGSW.checked = false;
       els.results.innerHTML = ''; els.noResults.style.display = 'block'; els.metaCount.textContent = '—';
       highlight(els.location.value);
     }
@@ -486,6 +504,10 @@
       if (v.hx.diabetes) atcd.push('diabète');
       if (v.hx.immunodepression) atcd.push('immunodépression');
       if (atcd.length) txt += `ATCD: ${atcd.join(', ')}\n`;
+      if (v.findings.gsw) txt += `Signes: blessure par balle (GSW)\n`;
+      if (v.findings.bleeding) txt += `Signes: saignement important\n`;
+      if (v.findings.deformity) txt += `Signes: déformation\n`;
+      if (v.findings.lossOfConsciousness) txt += `Signes: perte de conscience/confusion\n`;
       if (resCards.length) {
         txt += `Résultats:\n`;
         resCards.forEach(card => {
