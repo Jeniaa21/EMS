@@ -213,7 +213,7 @@
           <div class="row">
             <label class="chip"><input type="checkbox" id="f-bleeding" /> Saignement important</label>
             <label class="chip"><input type="checkbox" id="f-deformity" /> Déformation</label>
-            <label class="chip"><input type="checkbox" id="f-loc" /> Perte de conscience / confusion</label>
+            <label class="chip"><input type="checkbox" id="f-loc" /> confusion</label>
             <!-- >>> NOUVEAU : Blessure par balle -->
             <label class="chip"><input type="checkbox" id="f-gsw" /> Blessure par balle </label>
           </div>
@@ -507,7 +507,7 @@
       if (v.findings.gsw) txt += `Signes: blessure par balle\n`;
       if (v.findings.bleeding) txt += `Signes: saignement important\n`;
       if (v.findings.deformity) txt += `Signes: déformation\n`;
-      if (v.findings.lossOfConsciousness) txt += `Signes: perte de conscience/confusion\n`;
+      if (v.findings.lossOfConsciousness) txt += `confusion\n`;
       if (resCards.length) {
         txt += `Résultats:\n`;
         resCards.forEach(card => {
@@ -536,5 +536,6 @@
   </script>
 </body>
 </html>
+
 
 
