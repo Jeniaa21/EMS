@@ -82,6 +82,8 @@
         </div>
       </div>
       <div class="row">
+        <button class="btn ghost" id="btn-start" title="Mémoriser l'heure de début">🕒 Début intervention</button>
+        <span class="pill" id="start-pill" aria-live="polite">Début: —</span>
         <button class="btn ghost" id="btn-export-json" title="Exporter le cas (JSON)">Exporter</button>
         <button class="btn ghost" id="btn-print" title="Imprimer / PDF">Imprimer</button>
       </div>
@@ -91,7 +93,7 @@
       <!-- Formulaire -->
       <section class="card" aria-labelledby="form-title">
         <div class="titlebar">
-          <div class="section-title" id="form-title">Entrée patient</div>
+          <div class="section-title" id="form-title">Entrée patient RP</div>
           <div class="prio">Remplissez les champs puis cliquez <span class="kbd">Calculer</span></div>
         </div>
 
@@ -201,7 +203,7 @@
           <div style="flex:2 1 260px; min-width:260px;">
             <label>ATCD (cocher si présents)</label>
             <div class="row">
-              <label class="chip"><input type="checkbox" id="hx-anticoag" /> Anticoagulants</label>
+              <label class="chip"><input type="checkbox" id="hx-anticoag" /> Anticoagulants/AA</label>
               <label class="chip"><input type="checkbox" id="hx-diabetes" /> Diabète</label>
               <label class="chip"><input type="checkbox" id="hx-immuno" /> Immunodépression</label>
             </div>
@@ -213,8 +215,7 @@
           <div class="row">
             <label class="chip"><input type="checkbox" id="f-bleeding" /> Saignement important</label>
             <label class="chip"><input type="checkbox" id="f-deformity" /> Déformation</label>
-            <label class="chip"><input type="checkbox" id="f-loc" /> confusion</label>
-            <!-- >>> NOUVEAU : Blessure par balle -->
+            <label class="chip"><input type="checkbox" id="f-loc" /> Perte de conscience / confusion</label>
             <label class="chip"><input type="checkbox" id="f-gsw" /> Blessure par balle </label>
           </div>
         </div>
@@ -264,10 +265,27 @@
       btnExport: document.getElementById('btn-export-json'),
       btnPrint: document.getElementById('btn-print'),
       btnCopy: document.getElementById('btn-copy'),
+      btnStart: document.getElementById('btn-start'),
+      startPill: document.getElementById('start-pill'),
       results: document.getElementById('results'),
       noResults: document.getElementById('no-results'),
       metaCount: document.getElementById('meta-count'),
     };
+
+    // --- Heure début intervention ---
+    let startAt = null; // Date object ou null
+    function fmtDateTime(dt) {
+      return dt.toLocaleString(undefined, { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+    }
+    function setStartNow() {
+      startAt = new Date();
+      els.startPill.textContent = 'Début: ' + fmtDateTime(startAt);
+      // petit feedback sur le bouton
+      const old = els.btnStart.textContent;
+      els.btnStart.textContent = '✅ Heure enregistrée';
+      setTimeout(()=> els.btnStart.textContent = old, 1200);
+    }
+    els.btnStart.addEventListener('click', setStartNow);
 
     // --- Body-map sync ---
     const mapRegions = () => Array.from(document.querySelectorAll('.bm-region'));
@@ -327,7 +345,7 @@
         else out.push({ tag: 'Contusion légère', priority: 4, advice: 'Glace locale, repos, réévaluation.' });
 
         if (location === 'neck') {
-          if (p >= 6 || findings.deformity) out.push({ tag: 'Entorse cervicale / lésion ligamentaire', priority: 2, advice: 'Minevre, éviter mobilisations, évacuation si signes neuro.' });
+          if (p >= 6 || findings.deformity) out.push({ tag: 'Entorse cervicale / lésion ligamentaire', priority: 2, advice: 'Minerve (RP), éviter mobilisations, évacuation si signes neuro.' });
           else out.push({ tag: 'Cervicalgie mécanique', priority: 3, advice: 'Repos, chaleur douce, antalgiques.' });
         }
       }
@@ -459,7 +477,8 @@
           deformity: els.fDeformity.checked,
           lossOfConsciousness: els.fLoc.checked,
           gsw: els.fGSW.checked,
-        }
+        },
+        interventionStartISO: startAt ? startAt.toISOString() : null
       };
     }
 
@@ -474,6 +493,7 @@
       els.fBleeding.checked = false; els.fDeformity.checked = false; els.fLoc.checked = false; els.fGSW.checked = false;
       els.results.innerHTML = ''; els.noResults.style.display = 'block'; els.metaCount.textContent = '—';
       highlight(els.location.value);
+      startAt = null; els.startPill.textContent = 'Début: —';
     }
 
     function exportJSON() {
@@ -494,20 +514,24 @@
     function copySummary() {
       const v = getFormValues();
       const resCards = els.results.querySelectorAll('.result');
-      let txt = `Résumé rapide d'intervention\n`;
+      let txt = `Résumé RP — Trauma Triage\n`;
+      if (v.interventionStartISO) {
+        const dt = new Date(v.interventionStartISO);
+        txt += `Début intervention: ${dt.toLocaleString()}\n`;
+      }
       txt += `Incident: ${v.incident || '—'}\n`;
       txt += `Zone: ${v.location}\nDouleur: ${v.pain}/10\n`;
       if (v.age !== undefined) txt += `Âge: ${v.age}\n`;
       if (v.delayHours) txt += `Délai: ${v.delayHours}h\n`;
       const atcd = [];
-      if (v.hx.anticoagulants) atcd.push('anticoagulants');
+      if (v.hx.anticoagulants) atcd.push('anticoagulants/AA');
       if (v.hx.diabetes) atcd.push('diabète');
       if (v.hx.immunodepression) atcd.push('immunodépression');
       if (atcd.length) txt += `ATCD: ${atcd.join(', ')}\n`;
-      if (v.findings.gsw) txt += `Signes: blessure par balle\n`;
+      if (v.findings.gsw) txt += `Signes: blessure par balle (GSW)\n`;
       if (v.findings.bleeding) txt += `Signes: saignement important\n`;
       if (v.findings.deformity) txt += `Signes: déformation\n`;
-      if (v.findings.lossOfConsciousness) txt += `confusion\n`;
+      if (v.findings.lossOfConsciousness) txt += `Signes: perte de conscience/confusion\n`;
       if (resCards.length) {
         txt += `Résultats:\n`;
         resCards.forEach(card => {
@@ -536,7 +560,3 @@
   </script>
 </body>
 </html>
-
-
-
-
