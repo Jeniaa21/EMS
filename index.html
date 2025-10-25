@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GTA-RP Trauma Triage — Pré-diagnostic</title>
+  <title>GTA-RP Triage/Consult — Outil EMS</title>
   <style>
     :root {
       --bg: #0f172a; /* slate-900 */
@@ -16,6 +16,7 @@
       --danger: #ef4444; /* red-500 */
       --border: #1f2937; /* gray-800 */
       --chip: #111827; /* gray-900 */
+      --overlay: rgba(15, 23, 42, 0.85);
     }
     * { box-sizing: border-box; }
     body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
@@ -23,7 +24,7 @@
       color: var(--text);
     }
     .container { max-width: 980px; margin: 40px auto; padding: 0 16px; }
-    header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:20px; }
+    header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px; }
     .brand { display:flex; align-items:center; gap:12px; }
     .logo { width:40px; height:40px; border-radius:12px; background: linear-gradient(135deg, var(--accent), #8b5cf6); box-shadow: 0 10px 25px rgba(99,102,241,.35); }
     h1 { font-size: clamp(22px, 3vw, 28px); margin:0; letter-spacing: .2px; }
@@ -31,44 +32,70 @@
     .grid { display:grid; grid-template-columns: 1fr; gap: 16px; }
     @media (min-width: 900px) { .grid { grid-template-columns: 1.1fr .9fr; } }
     label { font-size: 14px; color: var(--muted); display:block; margin-bottom:6px; }
-    textarea, select, input[type="text"] { width:100%; background:#0a0f1b; color:var(--text); border:1px solid #192133; padding:10px 12px; border-radius:12px; outline:none; }
-    textarea:focus, select:focus, input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,.25); }
+    textarea, select, input[type="text"], input[type="number"] { width:100%; background:#0a0f1b; color:var(--text); border:1px solid #192133; padding:10px 12px; border-radius:12px; outline:none; font-size:15px; }
+    textarea:focus, select:focus, input[type="text"]:focus, input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,.25); }
     .range-wrap { background:#0a0f1b; border:1px solid #192133; padding:12px; border-radius:12px; }
     input[type="range"] { width:100%; }
     .row { display:flex; flex-wrap:wrap; gap:12px; }
-    .chip { display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:12px; background: var(--chip); border:1px solid #1f2937; font-size: 14px; }
+    .chip { display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:12px; background: var(--chip); border:1px solid #1f2937; font-size: 14px; cursor:pointer; user-select:none; }
+    .chip input { width:auto; margin-right:4px; }
     .btns { display:flex; gap:10px; flex-wrap:wrap; }
-    .btn { background: var(--accent); color:white; border:none; padding:10px 14px; border-radius:14px; cursor:pointer; font-weight:600; letter-spacing:.2px; }
+    .btn { background: var(--accent); color:white; border:none; padding:10px 14px; border-radius:14px; cursor:pointer; font-weight:600; letter-spacing:.2px; font-size:15px; }
     .btn.secondary { background:transparent; border:1px solid #334155; color: var(--text); }
-    .btn.ghost { background:transparent; color: var(--muted); }
+    .btn.ghost { background:transparent; color: var(--muted); padding: 8px 10px; }
+    .btn:disabled { opacity:.5; cursor:not-allowed; }
     .section-title { font-size:18px; font-weight:700; margin: 6px 0 10px; }
     .results { display:grid; gap:12px; }
     .result { border:1px solid #1f2937; border-left:4px solid var(--accent); padding:12px; border-radius:12px; background:#0a0f1b; }
     .prio { font-size:12px; color:#cbd5e1; opacity:.9; }
     .tag { font-weight:700; }
     .advice { color:#cbd5e1; margin-top:4px; }
-    .callout { background: rgba(245, 158, 11, .1); border:1px solid rgba(245, 158, 11, .35); color:#fde68a; border-radius:12px; padding:10px 12px; font-size:14px; }
+    .callout { border:1px solid rgba(245, 158, 11, .35); color:#fde68a; border-radius:12px; padding:10px 12px; font-size:14px; background: rgba(245, 158, 11, .1); }
+    .triage-p1 { background: rgba(239, 68, 68, .2); border-color: rgba(239, 68, 68, .4); color: #fca5a5; }
+    .triage-p2 { background: rgba(245, 158, 11, .1); border-color: rgba(245, 158, 11, .35); color:#fde68a; }
+    .triage-p3 { background: rgba(34, 197, 94, .1); border-color: rgba(34, 197, 94, .3); color: #86efac; }
+    .triage-p4 { background: rgba(148, 163, 184, .1); border-color: rgba(148, 163, 184, .3); color: #cbd5e1; }
     footer { margin-top: 16px; color: #94a3b8; font-size: 12px; }
     .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; background:#0b1220; border:1px solid #1f2937; padding:2px 6px; border-radius:6px; }
     .titlebar { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px; }
     .pill { font-size:12px; padding:6px 10px; border:1px solid #334155; border-radius:999px; color:#a5b4fc; background: rgba(99,102,241,.08); }
     .success { border-left-color: var(--accent-2); }
     .danger { border-left-color: var(--danger); }
+    .tabs { display:flex; gap:10px; margin-bottom:16px; }
+    .timers { background:transparent; border:none; box-shadow:none; padding:0; }
+    .timer-display { font-size:24px; font-family: ui-monospace, monospace; color:var(--text); font-weight:600; margin-bottom:8px; }
 
-    /* === Body-map mannequin (segmentée) === */
+    /* === Body-map === */
     .bodymap { display:flex; align-items:center; gap:12px; margin-top:8px; }
     .bodymap .mapwrap {
       background:#0a0f1b; border:1px solid #192133; border-radius:12px;
       padding:10px; width:260px; min-width:260px;
     }
     .bodymap-hint { font-size:12px; color:var(--muted); }
-    .bm-outline { fill:#0b1220; stroke:#1d2740; stroke-width:1.2; opacity:.55; }
     .bm-region {
       fill:#0b1220; stroke:#263043; stroke-width:1.5; cursor:pointer;
       transition:fill .15s ease, stroke .15s ease;
     }
     .bm-region:hover, .bm-region:focus { outline:none; fill:#111a2e; stroke:#7c89ff; }
     .bm-region.active { fill:rgba(99,102,241,.28); stroke:#8b5cf6; }
+
+    /* === Journal Modal === */
+    .modal-overlay {
+      display: none; position: fixed; z-index: 100;
+      left:0; top:0; width:100%; height:100%;
+      background: var(--overlay); backdrop-filter: blur(5px);
+      padding: 20px;
+    }
+    .modal-content {
+      position: relative; max-width: 700px; margin: 5vh auto;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .journal-entry {
+      border:1px solid #1f2937; border-radius:12px; background:#0a0f1b;
+      padding: 10px; margin-bottom: 8px; font-size: 14px;
+    }
+    .journal-entry div { margin-bottom: 4px; }
+    .btn-journal-load { font-size: 12px; padding: 6px 8px; margin-top: 5px; }
   </style>
 </head>
 <body>
@@ -77,178 +104,298 @@
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
-          <h1>Trauma Triage — Outil de <strong>pré</strong>-diagnostic</h1>
-          <div class="pill" aria-live="polite">Diagnostique d'intervention rapide· Ne remplace pas un avis médical poussé à l'hopital</div>
+          <h1>Outil EMS — <strong>Triage & Consultation</strong></h1>
+          <div class="pill" aria-live="polite">Ne remplace pas un avis médical poussé à l'hopital</div>
         </div>
       </div>
       <div class="row">
-        <button class="btn ghost" id="btn-start" title="Mémoriser l'heure de début">🕒 Début intervention</button>
+        <button class="btn ghost" id="btn-start" title="Mémoriser l'heure de début">🕒 Début inter.</button>
         <span class="pill" id="start-pill" aria-live="polite">Début: —</span>
-        <button class="btn ghost" id="btn-export-json" title="Exporter le cas (JSON)">Exporter</button>
+        <button class="btn ghost" id="btn-journal">Journal de Bord</button>
         <button class="btn ghost" id="btn-print" title="Imprimer / PDF">Imprimer</button>
       </div>
     </header>
 
-    <div class="grid">
-      <!-- Formulaire -->
-      <section class="card" aria-labelledby="form-title">
-        <div class="titlebar">
-          <div class="section-title" id="form-title">Entrée patient RP</div>
-          <div class="prio">Remplissez les champs puis cliquez <span class="kbd">Calculer</span></div>
+    <section class="card timers" style="margin-bottom:16px;">
+      <div class="row" style="justify-content: space-around; gap: 20px;">
+        <div>
+          <label>Chronomètre</label>
+          <div class="timer-display" id="chrono-display">00:00</div>
+          <div class="btns">
+            <button class="btn ghost" id="btn-chrono-start">▶</button>
+            <button class="btn ghost" id="btn-chrono-stop" disabled>❚❚</button>
+            <button class="btn ghost" id="btn-chrono-reset">Reset</button>
+          </div>
         </div>
+        <div>
+          <label>Minuteur (ex. RCP)</label>
+          <div class="timer-display" id="countdown-display">00:00</div>
+          <div class="btns">
+            <input type="number" id="countdown-input" value="2" style="width: 70px; padding: 8px;" title="Minutes" />
+            <button class="btn ghost" id="btn-countdown-start">▶</button>
+            <button class="btn ghost" id="btn-countdown-stop" disabled>❚❚</button>
+            <button class="btn ghost" id="btn-countdown-reset">Reset</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        <div class="row" style="gap:16px">
-          <div style="flex:1 1 100%">
+    <div class="tabs">
+      <button class="btn" id="btn-tab-trauma" aria-pressed="true">Mode Trauma</button>
+      <button class="btn secondary" id="btn-tab-consult" aria-pressed="false">Mode Consultation</button>
+    </div>
+
+    <div class="grid">
+      <div>
+        <section class="card" id="form-trauma" aria-labelledby="form-title-trauma">
+          <div class="titlebar">
+            <div class="section-title" id="form-title-trauma">Entrée patient RP (Trauma)</div>
+          </div>
+          
+          <div class="row" style="gap:16px; margin-bottom:16px;">
+             <div style="flex:1 1 180px; min-width:180px;">
+                <label for="patient-name">Nom/ID Patient</label>
+                <input type="text" id="patient-name" placeholder="ex. John Doe">
+             </div>
+             <div style="flex:1 1 120px; min-width:120px;">
+                <label for="age">Âge</label>
+                <input type="text" id="age" placeholder="ex. 28">
+             </div>
+             <div style="flex:1 1 160px; min-width:160px;">
+                <label for="delay">Délai depuis incident (h)</label>
+                <input type="text" id="delay" placeholder="ex. 3">
+             </div>
+          </div>
+
+          <div>
             <label for="incident">Que s'est-il passé ? (résumé court)</label>
             <textarea id="incident" rows="3" placeholder="Ex.: échange de tirs, impact cuisse G; saignement contrôlé"></textarea>
           </div>
 
-          <div style="flex:1 1 220px; min-width: 220px;">
-            <label for="location">Localisation principale de la douleur</label>
+          <div class="row" style="gap:16px; margin-top: 10px;">
+            <div style="flex:1 1 220px; min-width: 220px;">
+              <label for="location-display">Localisation(s) de la douleur</label>
+              <div class="bodymap" aria-label="Carte du corps cliquable">
+                <div class="mapwrap">
+                  <svg id="bodymap-front" viewBox="0 0 200 360" width="100%" role="img" aria-labelledby="bmTitleF">
+                    <title id="bmTitleF">Body-map mannequin (face)</title>
+                    <g class="bm-regions">
+                      <circle class="bm-region" tabindex="0" data-zone="head" cx="100" cy="38" r="22"><title>Tête / Crâne</title></circle>
+                      <rect class="bm-region" tabindex="0" data-zone="neck" x="90" y="60" rx="4" ry="4" width="20" height="14"><title>Cou / Gorge</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="chest" x="65" y="78" rx="10" ry="10" width="70" height="50"><title>Thorax / Poitrine</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="abdomen" x="70" y="132" rx="10" ry="10" width="60" height="36"><title>Abdomen / Ventre</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="pelvis" x="72" y="172" rx="10" ry="10" width="56" height="28"><title>Bassin</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="upper_arm_left" x="38" y="82" rx="12" ry="12" width="22" height="40"><title>Bras gauche (haut)</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="forearm_left" x="38" y="124" rx="12" ry="12" width="22" height="80"><title>Avant-bras gauche</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="upper_arm_right" x="140" y="82" rx="12" ry="12" width="22" height="40"><title>Bras droit (haut)</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="forearm_right" x="140" y="124" rx="12" ry="12" width="22" height="80"><title>Avant-bras droit</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="thigh_left" x="78" y="204" rx="10" ry="10" width="20" height="68"><title>Cuisse gauche</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="leg_left" x="78" y="274" rx="10" ry="10" width="20" height="70"><title>Jambe gauche</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="thigh_right" x="102" y="204" rx="10" ry="10" width="20" height="68"><title>Cuisse droite</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="leg_right" x="102" y="274" rx="10" ry="10" width="20" height="70"><title>Jambe droite</title></rect>
+                    </g>
+                  </svg>
+                  <svg id="bodymap-back" viewBox="0 0 200 360" width="100%" role="img" aria-labelledby="bmTitleB" style="display:none;">
+                    <title id="bmTitleB">Body-map mannequin (dos)</title>
+                    <g class="bm-regions">
+                      <circle class="bm-region" tabindex="0" data-zone="back_head" cx="100" cy="38" r="22"><title>Arrière de la tête</title></circle>
+                      <rect class="bm-region" tabindex="0" data-zone="back_neck" x="90" y="60" rx="4" ry="4" width="20" height="14"><title>Nuque</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="upper_back" x="65" y="78" rx="10" ry="10" width="70" height="50"><title>Haut du dos (Dorsales)</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="lower_back" x="70" y="132" rx="10" ry="10" width="60" height="36"><title>Bas du dos (Lombaires)</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="buttocks" x="72" y="172" rx="10" ry="10" width="56" height="28"><title>Fesses</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="back_upper_arm_left" x="38" y="82" rx="12" ry="12" width="22" height="40"><title>Arrière bras gauche</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="back_forearm_left" x="38" y="124" rx="12" ry="12" width="22" height="80"><title>Arrière avant-bras G</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="back_upper_arm_right" x="140" y="82" rx="12" ry="12" width="22" height="40"><title>Arrière bras droit</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="back_forearm_right" x="140" y="124" rx="12" ry="12" width="22" height="80"><title>Arrière avant-bras D</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="back_thigh_left" x="78" y="204" rx="10" ry="10" width="20" height="68"><title>Arrière cuisse gauche</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="back_leg_left" x="78" y="274" rx="10" ry="10" width="20" height="70"><title>Mollet gauche</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="back_thigh_right" x="102" y="204" rx="10" ry="10" width="20" height="68"><title>Arrière cuisse droite</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="back_leg_right" x="102" y="274" rx="10" ry="10" width="20" height="70"><title>Mollet droit</title></rect>
+                    </g>
+                  </svg>
+                  <div class="bodymap-hint">Cliquez sur une ou plusieurs zones.</div>
+                  <button class="btn secondary" id="btn-flip-map" style="width:100%; margin-top:8px;">🔄 Retourner</button>
+                </div>
 
-            <!-- ===== Body-map segmentée ===== -->
-            <div class="bodymap" aria-label="Carte du corps cliquable">
-              <div class="mapwrap">
-                <svg viewBox="0 0 200 360" width="100%" role="img" aria-labelledby="bmTitle">
-                  <title id="bmTitle">Body-map mannequin (face)</title>
-
-                  <!-- Tête -->
-                  <circle class="bm-region" tabindex="0" data-zone="head" cx="100" cy="38" r="22"><title>Tête / Crâne</title></circle>
-
-                  <!-- Cou -->
-                  <rect class="bm-region" tabindex="0" data-zone="neck" x="90" y="60" rx="4" ry="4" width="20" height="14"><title>Cou / Gorge</title></rect>
-
-                  <!-- Thorax -->
-                  <rect class="bm-region" tabindex="0" data-zone="chest" x="65" y="78" rx="10" ry="10" width="70" height="50"><title>Thorax / Poitrine</title></rect>
-
-                  <!-- Abdomen -->
-                  <rect class="bm-region" tabindex="0" data-zone="abdomen" x="70" y="132" rx="10" ry="10" width="60" height="36"><title>Abdomen / Ventre</title></rect>
-
-                  <!-- Bassin -->
-                  <rect class="bm-region" tabindex="0" data-zone="pelvis" x="72" y="172" rx="10" ry="10" width="56" height="28"><title>Bassin</title></rect>
-
-                  <!-- BRAS GAUCHE : bras (haut) + avant-bras (bas) -->
-                  <rect class="bm-region" tabindex="0" data-zone="upper_arm_left" x="38" y="82" rx="12" ry="12" width="22" height="40"><title>Bras gauche (humérus)</title></rect>
-                  <rect class="bm-region" tabindex="0" data-zone="forearm_left" x="38" y="124" rx="12" ry="12" width="22" height="80"><title>Avant-bras gauche</title></rect>
-
-                  <!-- BRAS DROIT -->
-                  <rect class="bm-region" tabindex="0" data-zone="upper_arm_right" x="140" y="82" rx="12" ry="12" width="22" height="40"><title>Bras droit (humérus)</title></rect>
-                  <rect class="bm-region" tabindex="0" data-zone="forearm_right" x="140" y="124" rx="12" ry="12" width="22" height="80"><title>Avant-bras droit</title></rect>
-
-                  <!-- JAMBE GAUCHE : cuisse + jambe -->
-                  <rect class="bm-region" tabindex="0" data-zone="thigh_left" x="78" y="204" rx="10" ry="10" width="20" height="68"><title>Cuisse gauche</title></rect>
-                  <rect class="bm-region" tabindex="0" data-zone="leg_left" x="78" y="274" rx="10" ry="10" width="20" height="70"><title>Jambe gauche</title></rect>
-
-                  <!-- JAMBE DROITE -->
-                  <rect class="bm-region" tabindex="0" data-zone="thigh_right" x="102" y="204" rx="10" ry="10" width="20" height="68"><title>Cuisse droite</title></rect>
-                  <rect class="bm-region" tabindex="0" data-zone="leg_right" x="102" y="274" rx="10" ry="10" width="20" height="70"><title>Jambe droite</title></rect>
-                </svg>
-                <div class="bodymap-hint">Clique une zone — le sélecteur se met à jour.</div>
-              </div>
-
-              <div style="flex:1">
-                <select id="location">
-                  <option value="head">Tête / Crâne</option>
-                  <option value="neck">Cou / Gorge</option>
-                  <option value="chest">Thorax / Poitrine</option>
-                  <option value="abdomen">Abdomen / Ventre</option>
-                  <option value="pelvis">Bassin</option>
-                  <optgroup label="Bras gauche">
-                    <option value="upper_arm_left">Bras (haut) — gauche</option>
-                    <option value="forearm_left">Avant-bras — gauche</option>
-                  </optgroup>
-                  <optgroup label="Bras droit">
-                    <option value="upper_arm_right">Bras (haut) — droit</option>
-                    <option value="forearm_right">Avant-bras — droit</option>
-                  </optgroup>
-                  <optgroup label="Jambe gauche">
-                    <option value="thigh_left">Cuisse — gauche</option>
-                    <option value="leg_left">Jambe — gauche</option>
-                  </optgroup>
-                  <optgroup label="Jambe droite">
-                    <option value="thigh_right">Cuisse — droit</option>
-                    <option value="leg_right">Jambe — droit</option>
-                  </optgroup>
-                  <option value="back">Dos</option>
-                  <option value="skin">Peau / Plaies</option>
-                </select>
+                <div style="flex:1">
+                  <input type="text" id="location-display" readonly placeholder="Cliquer sur le mannequin...">
+                </div>
               </div>
             </div>
-            <!-- ===== fin body-map ===== -->
 
-          </div>
-
-          <div style="flex:1 1 260px; min-width: 260px;">
-            <label for="pain">Niveau de douleur (1–10)</label>
-            <div class="range-wrap">
-              <input id="pain" type="range" min="1" max="10" value="5" step="1" />
-              <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:12px; color:var(--muted)">
-                <span>1</span><span>5</span><span>10</span>
+            <div style="flex:1 1 260px; min-width: 260px;">
+              <label for="pain">Niveau de douleur (1–10)</label>
+              <div class="range-wrap">
+                <input id="pain" type="range" min="1" max="10" value="5" step="1" />
+                <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:12px; color:var(--muted)">
+                  <span>1</span><span>5</span><span>10</span>
+                </div>
+                <div id="pain-label" style="margin-top:6px; font-weight:600;">Sévérité: 5 — Modérée</div>
               </div>
-              <div id="pain-label" style="margin-top:6px; font-weight:600;">Sévérité: 5 — Modérée</div>
             </div>
           </div>
-        </div>
 
-        <!-- Champs complémentaires -->
-        <div class="row" style="margin-top:10px; gap:12px">
-          <div style="flex:1 1 160px; min-width:160px;">
-            <label for="age">Âge</label>
-            <input type="text" id="age" placeholder="ex. 28" />
-          </div>
-          <div style="flex:1 1 200px; min-width:200px;">
-            <label for="delay">Délai depuis l'incident (heures)</label>
-            <input type="text" id="delay" placeholder="ex. 3" />
-          </div>
-          <div style="flex:2 1 260px; min-width:260px;">
+          <div style="margin-top:10px">
             <label>ATCD (cocher si présents)</label>
             <div class="row">
-              <label class="chip"><input type="checkbox" id="hx-anticoag" /> Anticoagulants/AA</label>
+              <label class="chip"><input type="checkbox" id="hx-anticoag" /> Anticoagulants</label>
               <label class="chip"><input type="checkbox" id="hx-diabetes" /> Diabète</label>
               <label class="chip"><input type="checkbox" id="hx-immuno" /> Immunodépression</label>
             </div>
           </div>
-        </div>
 
-        <div style="margin-top:10px">
-          <label>Signes visibles (cocher si présents)</label>
-          <div class="row">
-            <label class="chip"><input type="checkbox" id="f-bleeding" /> Saignement important</label>
-            <label class="chip"><input type="checkbox" id="f-deformity" /> Déformation</label>
-            <label class="chip"><input type="checkbox" id="f-loc" /> Perte de conscience / confusion</label>
-            <label class="chip"><input type="checkbox" id="f-gsw" /> Blessure par balle </label>
+          <div style="margin-top:10px">
+            <label>Signes visibles (cocher si présents)</label>
+            <div class="row">
+              <label class="chip"><input type="checkbox" id="f-bleeding" /> Saignement important</label>
+              <label class="chip"><input type="checkbox" id="f-deformity" /> Déformation</label>
+              <label class="chip"><input type="checkbox" id="f-loc" /> Perte de conscience / confusion</label>
+              <label class="chip"><input type="checkbox" id="f-gsw" /> Blessure par balle </label>
+              <label class="chip"><input type="checkbox" id="f-burn" /> Brûlure</label>
+            </div>
           </div>
-        </div>
+        </section>
+
+        <section class="card" id="form-consult" aria-labelledby="form-title-consult" style="display:none;">
+          <div class="titlebar">
+            <div class="section-title" id="form-title-consult">Entrée patient RP (Consultation)</div>
+          </div>
+          
+          <div class="row" style="gap:16px; margin-bottom:16px;">
+             <div style="flex:1 1 180px; min-width:180px;">
+                <label for="patient-name-consult">Nom/ID Patient</label>
+                <input type="text" id="patient-name-consult" placeholder="ex. John Doe">
+             </div>
+             <div style="flex:1 1 120px; min-width:120px;">
+                <label for="age-consult">Âge</label>
+                <input type="text" id="age-consult" placeholder="ex. 28">
+             </div>
+          </div>
+
+          <div class="section-title" style="font-size:16px; margin-top:10px;">Signes Vitaux (RP)</div>
+          <div class="row" style="gap:12px;">
+            <div style="flex:1 1 100px;">
+              <label for="vital-fc">FC (bpm)</label>
+              <input type="number" id="vital-fc" placeholder="ex. 75">
+            </div>
+            <div style="flex:1 1 100px;">
+              <label for="vital-spo2">SpO2 (%)</label>
+              <input type="number" id="vital-spo2" placeholder="ex. 98">
+            </div>
+            <div style="flex:1 1 100px;">
+              <label for="vital-ta-sys">TA Sys</label>
+              <input type="number" id="vital-ta-sys" placeholder="ex. 120">
+            </div>
+            <div style="flex:1 1 100px;">
+              <label for="vital-ta-dia">TA Dia</label>
+              <input type="number" id="vital-ta-dia" placeholder="ex. 80">
+            </div>
+            <div style="flex:1 1 100px;">
+              <label for="vital-hgt">Glycémie</label>
+              <input type="number" id="vital-hgt" placeholder="ex. 90">
+            </div>
+            <div style="flex:1 1 100px;">
+              <label for="vital-temp">Temp (°C)</label>
+              <input type="number" id="vital-temp" placeholder="ex. 37.0">
+            </div>
+          </div>
+
+          <div class="section-title" style="font-size:16px; margin-top:16px;">Symptômes (cocher)</div>
+          <div class="row">
+            <label class="chip"><input type="checkbox" id="sym-chestpain" /> Douleur thoracique</label>
+            <label class="chip"><input type="checkbox" id="sym-dyspnea" /> Difficulté respi.</label>
+            <label class="chip"><input type="checkbox" id="sym-fever" /> Fièvre / Frissons</label>
+            <label class="chip"><input type="checkbox" id="sym-nausea" /> Nausées / Vomiss.</label>
+            <label class="chip"><input type="checkbox" id="sym-dizzy" /> Vertiges / Tête qui tourne</label>
+            <label class="chip"><input type="checkbox" id="sym-confusion" /> Confusion / Désorient.</label>
+            <label class="chip"><input type="checkbox" id="sym-abdo" /> Douleur abdominale</label>
+            <label class="chip"><input type="checkbox" id="sym-headache" /> Céphalée (mal de tête)</label>
+          </div>
+          
+          <div style="margin-top:16px">
+            <label for="consult-details">Détails complémentaires</label>
+            <textarea id="consult-details" rows="3" placeholder="Ex.: douleur thoracique oppressive irradiant bras gauche..."></textarea>
+          </div>
+        </section>
 
         <div class="btns" style="margin-top:14px;">
           <button class="btn" id="btn-calc">Calculer</button>
           <button class="btn secondary" id="btn-reset" type="button">Réinitialiser</button>
         </div>
-      </section>
+      </div>
 
-      <!-- Résultats -->
       <section class="card" aria-labelledby="res-title">
         <div class="titlebar">
           <div class="section-title" id="res-title">Résultats (pré-diagnostic)</div>
           <div class="prio" id="meta-count">—</div>
         </div>
+        
+        <div id="global-triage" class="callout" style="display: none; text-align: center; font-weight: bold; font-size: 1.1em; margin-bottom:12px;">
+          </div>
+
         <div id="results" class="results" aria-live="polite"></div>
         <div id="no-results" class="callout" style="display:none; margin-top:8px">Aucun résultat. Saisissez des informations puis cliquez <span class="kbd">Calculer</span>.</div>
 
-        <!-- Bouton copier -->
         <button class="btn" id="btn-copy" style="margin-top:10px; width:100%">📋 Copier le résumé</button>
+        <button class="btn ghost" id="btn-export-json" title="Exporter le cas (JSON)" style="width:100%; margin-top:8px;">Exporter (JSON)</button>
       </section>
     </div>
 
     <footer>
-      <p>© <span id="year"></span> — Trauma Triage.</p>
+      <p>© <span id="year"></span> — Triage/Consult Tool.</p>
     </footer>
   </div>
 
+  <div id="journal-modal" class="modal-overlay">
+    <div class="modal-content card">
+      <div class="titlebar">
+        <h2 class="section-title">Journal de Bord (20 derniers)</h2>
+        <button class="btn ghost" id="btn-journal-close" style="font-size: 20px; padding: 0 8px;">&times;</button>
+      </div>
+      <div id="journal-content" style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+        </div>
+      <button class="btn secondary" id="btn-journal-clear" style="margin-top: 15px;">Vider le journal</button>
+    </div>
+  </div>
+
+
   <script>
+    // --- État global ---
+    let startAt = null; // Date object ou null
+    let selectedZones = [];
+    let chronoInterval = null;
+    let chronoStartTime = 0;
+    let chronoElapsedTime = 0;
+    let countdownInterval = null;
+    let countdownEndTime = 0;
+    let countdownPaused = false;
+
+    // --- Mappage des Éléments (ELS) ---
     const els = {
+      // Header
+      btnStart: document.getElementById('btn-start'),
+      startPill: document.getElementById('start-pill'),
+      btnJournal: document.getElementById('btn-journal'),
+      btnPrint: document.getElementById('btn-print'),
+      // Timers
+      chronoDisplay: document.getElementById('chrono-display'),
+      btnChronoStart: document.getElementById('btn-chrono-start'),
+      btnChronoStop: document.getElementById('btn-chrono-stop'),
+      btnChronoReset: document.getElementById('btn-chrono-reset'),
+      countdownDisplay: document.getElementById('countdown-display'),
+      countdownInput: document.getElementById('countdown-input'),
+      btnCountdownStart: document.getElementById('btn-countdown-start'),
+      btnCountdownStop: document.getElementById('btn-countdown-stop'),
+      btnCountdownReset: document.getElementById('btn-countdown-reset'),
+      // Tabs
+      btnTabTrauma: document.getElementById('btn-tab-trauma'),
+      btnTabConsult: document.getElementById('btn-tab-consult'),
+      formTrauma: document.getElementById('form-trauma'),
+      formConsult: document.getElementById('form-consult'),
+      // Formulaire Trauma
+      patientName: document.getElementById('patient-name'),
       incident: document.getElementById('incident'),
-      location: document.getElementById('location'),
+      locationDisplay: document.getElementById('location-display'),
       pain: document.getElementById('pain'),
       painLabel: document.getElementById('pain-label'),
       age: document.getElementById('age'),
@@ -260,168 +407,294 @@
       fDeformity: document.getElementById('f-deformity'),
       fLoc: document.getElementById('f-loc'),
       fGSW: document.getElementById('f-gsw'),
+      fBurn: document.getElementById('f-burn'),
+      btnFlipMap: document.getElementById('btn-flip-map'),
+      bodyMapFront: document.getElementById('bodymap-front'),
+      bodyMapBack: document.getElementById('bodymap-back'),
+      // Formulaire Consultation
+      patientNameConsult: document.getElementById('patient-name-consult'),
+      ageConsult: document.getElementById('age-consult'),
+      vitalFc: document.getElementById('vital-fc'),
+      vitalSpo2: document.getElementById('vital-spo2'),
+      vitalTaSys: document.getElementById('vital-ta-sys'),
+      vitalTaDia: document.getElementById('vital-ta-dia'),
+      vitalHgt: document.getElementById('vital-hgt'),
+      vitalTemp: document.getElementById('vital-temp'),
+      symChestpain: document.getElementById('sym-chestpain'),
+      symDyspnea: document.getElementById('sym-dyspnea'),
+      symFever: document.getElementById('sym-fever'),
+      symNausea: document.getElementById('sym-nausea'),
+      symDizzy: document.getElementById('sym-dizzy'),
+      symConfusion: document.getElementById('sym-confusion'),
+      symAbdo: document.getElementById('sym-abdo'),
+      symHeadache: document.getElementById('sym-headache'),
+      consultDetails: document.getElementById('consult-details'),
+      // Boutons Formulaire
       btnCalc: document.getElementById('btn-calc'),
       btnReset: document.getElementById('btn-reset'),
-      btnExport: document.getElementById('btn-export-json'),
-      btnPrint: document.getElementById('btn-print'),
-      btnCopy: document.getElementById('btn-copy'),
-      btnStart: document.getElementById('btn-start'),
-      startPill: document.getElementById('start-pill'),
+      // Résultats
+      globalTriage: document.getElementById('global-triage'),
       results: document.getElementById('results'),
       noResults: document.getElementById('no-results'),
       metaCount: document.getElementById('meta-count'),
+      btnCopy: document.getElementById('btn-copy'),
+      btnExport: document.getElementById('btn-export-json'),
+      // Journal
+      journalModal: document.getElementById('journal-modal'),
+      journalContent: document.getElementById('journal-content'),
+      btnJournalClose: document.getElementById('btn-journal-close'),
+      btnJournalClear: document.getElementById('btn-journal-clear'),
+      // Footer
+      year: document.getElementById('year'),
     };
 
     // --- Heure début intervention ---
-    let startAt = null; // Date object ou null
     function fmtDateTime(dt) {
       return dt.toLocaleString(undefined, { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
     }
     function setStartNow() {
       startAt = new Date();
       els.startPill.textContent = 'Début: ' + fmtDateTime(startAt);
-      // petit feedback sur le bouton
       const old = els.btnStart.textContent;
       els.btnStart.textContent = '✅ Heure enregistrée';
       setTimeout(()=> els.btnStart.textContent = old, 1200);
     }
-    els.btnStart.addEventListener('click', setStartNow);
 
-    // --- Body-map sync ---
+    // --- Gestion des Tabs ---
+    function setActiveTab(tabName) {
+      if (tabName === 'trauma') {
+        els.formTrauma.style.display = 'block';
+        els.formConsult.style.display = 'none';
+        els.btnTabTrauma.className = 'btn';
+        els.btnTabTrauma.setAttribute('aria-pressed', 'true');
+        els.btnTabConsult.className = 'btn secondary';
+        els.btnTabConsult.setAttribute('aria-pressed', 'false');
+      } else {
+        els.formTrauma.style.display = 'none';
+        els.formConsult.style.display = 'block';
+        els.btnTabTrauma.className = 'btn secondary';
+        els.btnTabTrauma.setAttribute('aria-pressed', 'false');
+        els.btnTabConsult.className = 'btn';
+        els.btnTabConsult.setAttribute('aria-pressed', 'true');
+      }
+      // Synchroniser le nom du patient entre les formulaires
+      if (tabName === 'trauma') {
+        els.patientNameConsult.value = els.patientName.value;
+        els.ageConsult.value = els.age.value;
+      } else {
+        els.patientName.value = els.patientNameConsult.value;
+        els.age.value = els.ageConsult.value;
+      }
+      clearResults();
+    }
+    // Synchronisation des champs communs
+    els.patientName.addEventListener('input', () => els.patientNameConsult.value = els.patientName.value);
+    els.patientNameConsult.addEventListener('input', () => els.patientName.value = els.patientNameConsult.value);
+    els.age.addEventListener('input', () => els.ageConsult.value = els.age.value);
+    els.ageConsult.addEventListener('input', () => els.age.value = els.age.value);
+
+
+    // --- Body-map (Multi-select + Recto/Verso) ---
     const mapRegions = () => Array.from(document.querySelectorAll('.bm-region'));
-    function highlight(zone){ mapRegions().forEach(el=> el.classList.toggle('active', el.dataset.zone === zone)); }
-    function setLocation(zone){ if(!zone) return; els.location.value = zone; highlight(zone); }
-    mapRegions().forEach(el=>{
-      el.addEventListener('click', ()=> setLocation(el.dataset.zone));
-      el.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); setLocation(el.dataset.zone);} });
-    });
-    els.location.addEventListener('change', ()=> highlight(els.location.value));
-    highlight(els.location.value);
+    
+    function toggleLocation(zone) {
+      if (!zone) return;
+      const regionEl = document.querySelector(`.bm-region[data-zone="${zone}"]`);
+      if (selectedZones.includes(zone)) {
+        selectedZones = selectedZones.filter(z => z !== zone);
+        regionEl?.classList.remove('active');
+      } else {
+        selectedZones.push(zone);
+        regionEl?.classList.add('active');
+      }
+      els.locationDisplay.value = selectedZones.join(', ') || 'Cliquer sur le mannequin...';
+    }
 
-    // Douleur
+    mapRegions().forEach(el=>{
+      el.addEventListener('click', ()=> toggleLocation(el.dataset.zone));
+      el.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); toggleLocation(el.dataset.zone);} });
+    });
+
+    els.btnFlipMap.addEventListener('click', () => {
+      const isFront = els.bodyMapFront.style.display !== 'none';
+      els.bodyMapFront.style.display = isFront ? 'none' : 'block';
+      els.bodyMapBack.style.display = isFront ? 'block' : 'none';
+    });
+
+    // --- Douleur (Trauma) ---
     function updatePainLabel() {
       const v = Number(els.pain.value);
       const band = v <= 3 ? 'Faible' : v <= 7 ? 'Modérée' : 'Sévère';
       els.painLabel.textContent = `Sévérité: ${v} — ${band}`;
     }
     els.pain.addEventListener('input', updatePainLabel);
-    updatePainLabel();
 
-    // Helpers zones détaillées
-    const isUpperArm   = z => ['upper_arm_left','upper_arm_right'].includes(z);
-    const isForearm    = z => ['forearm_left','forearm_right'].includes(z);
-    const isThigh      = z => ['thigh_left','thigh_right'].includes(z);
-    const isLeg        = z => ['leg_left','leg_right'].includes(z);
-    const isUpperExt   = z => isUpperArm(z) || isForearm(z);
-    const isLowerExt   = z => isThigh(z) || isLeg(z);
+    // --- Timers ---
+    function formatTimer(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+      const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+      return `${minutes}:${seconds}`;
+    }
 
-    // Moteur étendu (intègre GSW)
-    function computePreDiagnosis({ location, pain, findings, age, delayHours, hx }) {
+    // Chrono
+    function startChrono() {
+      if (chronoInterval) return;
+      chronoStartTime = Date.now() - chronoElapsedTime;
+      chronoInterval = setInterval(() => {
+        chronoElapsedTime = Date.now() - chronoStartTime;
+        els.chronoDisplay.textContent = formatTimer(chronoElapsedTime);
+      }, 100);
+      els.btnChronoStart.disabled = true;
+      els.btnChronoStop.disabled = false;
+    }
+    function stopChrono() {
+      clearInterval(chronoInterval);
+      chronoInterval = null;
+      els.btnChronoStart.disabled = false;
+      els.btnChronoStop.disabled = true;
+    }
+    function resetChrono() {
+      stopChrono();
+      chronoElapsedTime = 0;
+      els.chronoDisplay.textContent = '00:00';
+    }
+
+    // Countdown
+    function startCountdown() {
+      if (countdownInterval) { // Resume
+        countdownEndTime = Date.now() + (countdownEndTime - Date.now());
+        countdownPaused = false;
+      } else { // Start new
+        const minutes = parseFloat(els.countdownInput.value) || 0;
+        if (minutes <= 0) return;
+        countdownEndTime = Date.now() + minutes * 60000;
+      }
+      
+      countdownInterval = setInterval(updateCountdown, 100);
+      els.btnCountdownStart.disabled = true;
+      els.btnCountdownStop.disabled = false;
+      els.countdownInput.disabled = true;
+    }
+    function updateCountdown() {
+      const remaining = countdownEndTime - Date.now();
+      if (remaining <= 0) {
+        stopCountdown();
+        els.countdownDisplay.textContent = '00:00';
+        els.countdownDisplay.style.color = 'var(--danger)';
+        setTimeout(() => els.countdownDisplay.style.color = 'var(--text)', 2000);
+        // Optionnel: alerte sonore
+        // new Audio('path/to/alarm.mp3').play();
+      } else {
+        els.countdownDisplay.textContent = formatTimer(remaining);
+      }
+    }
+    function stopCountdown() {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+      countdownPaused = true;
+      els.btnCountdownStart.disabled = false;
+      els.btnCountdownStop.disabled = true;
+    }
+    function resetCountdown() {
+      stopCountdown();
+      countdownPaused = false;
+      els.countdownDisplay.textContent = '00:00';
+      els.countdownDisplay.style.color = 'var(--text)';
+      els.countdownInput.disabled = false;
+    }
+
+    // --- MOTEUR DE DIAGNOSTIC (TRAUMA) ---
+    function computeTraumaDiagnosis({ locations, pain, findings, age, delayHours, hx }) {
       const out = [];
       const p = Number(pain);
+      const uniqueTags = new Set();
+
+      const addResult = (item) => {
+        if (!uniqueTags.has(item.tag)) {
+          out.push(item);
+          uniqueTags.add(item.tag);
+        }
+      };
 
       // Red flags généraux
-      if (findings.bleeding) out.push({ tag: 'Hémorragie active', priority: 1, advice: 'Compression/garrot, évacuation rapide.' });
-      if (findings.lossOfConsciousness) out.push({ tag: 'Altération neurologique (TC suspect)', priority: 1, advice: 'Surveillance neuro, immobilisation tête/cou, évacuation.' });
+      if (findings.bleeding) addResult({ tag: 'Hémorragie active', priority: 1, advice: 'Compression/garrot, évacuation rapide.' });
+      if (findings.lossOfConsciousness) addResult({ tag: 'Altération neurologique (TC suspect)', priority: 1, advice: 'Surveillance neuro, immobilisation tête/cou, évacuation.' });
 
-      // >>> GSW : toujours P1 + hypothèse par zone
+      // GSW : toujours P1
       if (findings.gsw) {
-        out.push({ tag: 'Blessure par balle', priority: 1, advice: "Urgence vitale : contrôle hémorragie, pansement occlusif si thorax, évacuation immédiate pour chirurgie." });
-        if (location === 'chest') {
-          out.push({ tag: 'GSW thoracique — pneumo/hémothorax (suspect)', priority: 1, advice: 'Détresse respi possible : pansement occlusif 3 côtés, évacuation.' });
-        } else if (location === 'abdomen' || location === 'pelvis') {
-          out.push({ tag: 'GSW abdominal/pelvien — hémorragie interne (suspecte)', priority: 1, advice: 'Choc possible : transport rapide vers bloc.' });
-        } else if (location === 'head' || location === 'neck') {
-          out.push({ tag: 'GSW tête/cou — lésion critique', priority: 1, advice: 'Saignement : prioriser contrôle, évacuation immédiate.' });
-        } else if (isUpperExt(location) || isLowerExt(location)) {
-          out.push({ tag: 'GSW membre — lésion vasculo-nerveuse (suspecte)', priority: 1, advice: 'Garrot/pression, vérifier motricité/sensibilité distale, évacuation.' });
-        }
+        addResult({ tag: 'Blessure par balle (Multiples)', priority: 1, advice: "Urgence vitale : contrôle hémorragie, pansement occlusif si thorax, évacuation immédiate pour chirurgie." });
       }
-
-      // Tête / cou
-      if (location === 'head' || location === 'neck') {
-        if (p >= 8) out.push({ tag: 'Traumatisme crânien modéré/sévère', priority: 2, advice: 'Céphalées intenses, vomissements, troubles → évacuation.' });
-        else if (p >= 4) out.push({ tag: 'Commotion / contusion', priority: 3, advice: 'Repos, glace, surveillance 24h.' });
-        else out.push({ tag: 'Contusion légère', priority: 4, advice: 'Glace locale, repos, réévaluation.' });
-
-        if (location === 'neck') {
-          if (p >= 6 || findings.deformity) out.push({ tag: 'Entorse cervicale / lésion ligamentaire', priority: 2, advice: 'Minerve (RP), éviter mobilisations, évacuation si signes neuro.' });
-          else out.push({ tag: 'Cervicalgie mécanique', priority: 3, advice: 'Repos, chaleur douce, antalgiques.' });
+      
+      // Brûlures
+      if (findings.burn) {
+        let burnAdvice = 'Nettoyage stérile, pansement, hydratation. Évaluer surface.';
+        let burnPrio = 2;
+        if (locations.some(z => ['head', 'neck', 'chest', 'back_head', 'back_neck'].includes(z))) {
+            burnAdvice = 'Brûlure voies aéro-digestives suspectée. Évacuation urgente.';
+            burnPrio = 1;
         }
+        addResult({ tag: 'Brûlure(s)', priority: burnPrio, advice: burnAdvice });
       }
+      
+      // Helpers zones
+      const isHeadNeck = z => ['head', 'neck', 'back_head', 'back_neck'].includes(z);
+      const isChest = z => ['chest', 'upper_back'].includes(z);
+      const isAbdoPelvis = z => ['abdomen', 'pelvis', 'lower_back', 'buttocks'].includes(z);
+      const isUpperExt = z => z.includes('arm');
+      const isLowerExt = z => z.includes('thigh') || z.includes('leg');
 
-      // Thorax
-      if (location === 'chest') {
-        if (p >= 8 || findings.deformity) {
-          out.push({ tag: 'Fractures costales multiples / volet', priority: 1, advice: 'Détresse respi possible — évacuation urgente.' });
-          out.push({ tag: 'Pneumothorax/contusion pulmonaire (suspect)', priority: 1, advice: 'Douleur latérale + dyspnée → évacuation.' });
-        } else if (p >= 5) {
-          out.push({ tag: 'Fracture costale isolée', priority: 2, advice: 'Analgésie, surveiller dyspnée/toux.' });
-          out.push({ tag: 'Contusion costale', priority: 3, advice: 'Repos, glace, respiration contrôlée.' });
-        } else {
-          out.push({ tag: 'Douleur pariétale mineure', priority: 3, advice: 'Repos, surveillance.' });
+      // Évaluation par zone (pour chaque zone sélectionnée)
+      for (const loc of locations) {
+        
+        // GSW par zone
+        if (findings.gsw) {
+          if (isChest(loc)) addResult({ tag: 'GSW thoracique — pneumo/hémothorax (suspect)', priority: 1, advice: 'Détresse respi possible : pansement occlusif 3 côtés, évacuation.' });
+          else if (isAbdoPelvis(loc)) addResult({ tag: 'GSW abdominal/pelvien — hémorragie interne (suspecte)', priority: 1, advice: 'Choc possible : transport rapide vers bloc.' });
+          else if (isHeadNeck(loc)) addResult({ tag: 'GSW tête/cou — lésion critique', priority: 1, advice: 'Saignement : prioriser contrôle, évacuation immédiate.' });
+          else if (isUpperExt(loc) || isLowerExt(loc)) addResult({ tag: 'GSW membre — lésion vasculo-nerveuse (suspecte)', priority: 1, advice: 'Garrot/pression, vérifier motricité/sensibilité distale, évacuation.' });
         }
-      }
-
-      // Abdomen / bassin
-      if (location === 'abdomen' || location === 'pelvis') {
-        if (p >= 7 || findings.bleeding) out.push({ tag: 'Lésion viscérale / hémorragie interne (suspecte)', priority: 1, advice: 'Transport rapide, surveiller signes de choc.' });
-        else if (p >= 4) out.push({ tag: 'Contusion abdominale', priority: 2, advice: 'Surveillance défense/rigidité; aggravation → évacuation.' });
-        else out.push({ tag: 'Atteinte pariétale mineure', priority: 4, advice: 'Glace, repos, réévaluation.' });
-        if (location === 'pelvis' && (p >= 6 || findings.deformity)) out.push({ tag: 'Atteinte pelvienne (suspecte)', priority: 1, advice: 'Douleur bassin/instabilité → évacuation.' });
-      }
-
-      // Membres supérieurs (détaillés)
-      if (isUpperExt(location)) {
-        if (isUpperArm(location)) {
-          if (findings.deformity || p >= 8) out.push({ tag: 'Fracture humérus (suspecte)', priority: 2, advice: 'Immobiliser bras, coussin d’écharpe, évacuation pour imagerie.' });
-          if (p >= 5 && !findings.deformity) out.push({ tag: 'Luxation épaule (possible)', priority: 2, advice: 'Déformation/impotence → immobiliser, évacuation.' });
-          if (p >= 4) out.push({ tag: 'Contusion musculaire (deltoïde/biceps)', priority: 3, advice: 'R.I.C.E., antalgiques.' });
-          if (p < 4) out.push({ tag: 'Douleur bénigne du bras', priority: 4, advice: 'Repos, glace, surveillance.' });
-        }
-        if (isForearm(location)) {
-          if (findings.deformity || p >= 8) out.push({ tag: 'Fracture radius/ulna (avant-bras)', priority: 2, advice: 'Attelle, contrôle saignement, évacuation.' });
-          else if (p >= 5) {
-            out.push({ tag: 'Entorse poignet (possible)', priority: 3, advice: 'Contention, R.I.C.E.' });
-            out.push({ tag: 'Fracture non déplacée (possible)', priority: 3, advice: 'Douleur osseuse à la palpation → imagerie.' });
-          } else {
-            out.push({ tag: 'Contusion avant-bras', priority: 4, advice: 'Glace, pansement si abrasion.' });
-          }
-          if (findings.bleeding) out.push({ tag: 'Plaie tendineuse (suspecte)', priority: 2, advice: 'Nettoyage, pansement compressif, évaluation suture.' });
-        }
-      }
-
-      // Membres inférieurs (détaillés)
-      if (isLowerExt(location)) {
-        if (isThigh(location)) {
-          if (findings.deformity || p >= 8) out.push({ tag: 'Fracture fémur (suspecte)', priority: 1, advice: 'Douleur intense, déformation → immobiliser, évacuation.' });
-          if (p >= 5) out.push({ tag: 'Déchirure quadri/ischios (possible)', priority: 3, advice: 'R.I.C.E., éviter appui, réévaluation.' });
-          if (p < 5) out.push({ tag: 'Contusion cuisse', priority: 4, advice: 'Glace/élévation.' });
-        }
-        if (isLeg(location)) {
-          if (findings.deformity || p >= 8) out.push({ tag: 'Fracture tibia/péroné (suspecte)', priority: 2, advice: 'Attelle, contrôle saignement, évacuation.' });
-          else if (p >= 5) {
-            out.push({ tag: 'Entorse cheville sévère (possible)', priority: 3, advice: 'R.I.C.E., immobilisation.' });
-            out.push({ tag: 'Fracture malléolaire non déplacée (possible)', priority: 3, advice: 'Douleur osseuse, imagerie.' });
-          } else {
-            out.push({ tag: 'Contusion jambe', priority: 4, advice: 'Glace, pansement si abrasion.' });
+        
+        // Logique trauma standard
+        if (isHeadNeck(loc)) {
+          if (p >= 8) addResult({ tag: 'Traumatisme crânien modéré/sévère', priority: 2, advice: 'Céphalées intenses, vomissements, troubles → évacuation.' });
+          else if (p >= 4) addResult({ tag: 'Commotion / contusion', priority: 3, advice: 'Repos, glace, surveillance 24h.' });
+          if (loc === 'neck' || loc === 'back_neck') {
+            if (p >= 6 || findings.deformity) addResult({ tag: 'Entorse cervicale / lésion', priority: 2, advice: 'Minerve (RP), éviter mobilisations, évacuation si signes neuro.' });
           }
         }
+        else if (isChest(loc)) {
+          if (p >= 8 || findings.deformity) {
+            addResult({ tag: 'Fractures costales multiples / volet', priority: 1, advice: 'Détresse respi possible — évacuation urgente.' });
+            addResult({ tag: 'Pneumothorax/contusion pulmonaire (suspect)', priority: 1, advice: 'Douleur latérale + dyspnée → évacuation.' });
+          } else if (p >= 5) {
+            addResult({ tag: 'Fracture costale isolée', priority: 2, advice: 'Analgésie, surveiller dyspnée/toux.' });
+            addResult({ tag: 'Contusion costale', priority: 3, advice: 'Repos, glace, respiration contrôlée.' });
+          }
+        }
+        else if (isAbdoPelvis(loc)) {
+          if (p >= 7 || (findings.bleeding && loc === 'abdomen')) addResult({ tag: 'Lésion viscérale / hémorragie interne (suspecte)', priority: 1, advice: 'Transport rapide, surveiller signes de choc.' });
+          else if (p >= 4) addResult({ tag: 'Contusion abdominale', priority: 2, advice: 'Surveillance défense/rigidité; aggravation → évacuation.' });
+          if (loc === 'pelvis' && (p >= 6 || findings.deformity)) addResult({ tag: 'Atteinte pelvienne (suspecte)', priority: 1, advice: 'Douleur bassin/instabilité → évacuation.' });
+          if (loc === 'lower_back' && p >= 7) addResult({ tag: 'Atteinte rachidienne (suspecte)', priority: 1, advice: 'Immobiliser, éviter rotations, évacuation.' });
+        }
+        else if (isUpperExt(loc)) {
+          if (findings.deformity || p >= 8) addResult({ tag: 'Fracture membre supérieur (suspecte)', priority: 2, advice: 'Immobiliser, attelle, évacuation pour imagerie.' });
+          else if (p >= 5) addResult({ tag: 'Contusion/entorse membre sup.', priority: 3, advice: 'R.I.C.E., antalgiques.' });
+        }
+        else if (isLowerExt(loc)) {
+          if (findings.deformity || p >= 8) {
+            const tag = (loc.includes('thigh')) ? 'Fracture fémur (suspecte)' : 'Fracture tibia/péroné (suspecte)';
+            const prio = (loc.includes('thigh')) ? 1 : 2;
+            addResult({ tag: tag, priority: prio, advice: 'Douleur intense, déformation → immobiliser, évacuation.' });
+          }
+          else if (p >= 5) addResult({ tag: 'Entorse/déchirure membre inf.', priority: 3, advice: 'R.I.C.E., éviter appui, réévaluation.' });
+        }
       }
 
-      // Dos
-      if (location === 'back') {
-        if (p >= 7 || findings.deformity || findings.lossOfConsciousness) out.push({ tag: 'Atteinte rachidienne (suspecte)', priority: 1, advice: 'Immobiliser, éviter rotations, évacuation.' });
-        else out.push({ tag: 'Lombalgie/contusion dorsale', priority: 3, advice: 'Repos, chaleur douce, antalgiques.' });
+      if (!out.length && !findings.gsw && !findings.burn) {
+        addResult({ tag: 'Évaluation non spécifique', priority: 4, advice: 'Surveillance, éviter activité, réévaluation.' });
       }
-
-      // Peau
-      if (location === 'skin') {
-        if (p >= 6 || findings.bleeding) out.push({ tag: 'Lacération / avulsion', priority: 2, advice: 'Nettoyage, compresser, suture selon taille.' });
-        else out.push({ tag: 'Abrasions/éraflures', priority: 4, advice: 'Nettoyage doux, pansement.' });
-      }
-
-      if (!out.length) out.push({ tag: 'Évaluation non spécifique', priority: 4, advice: 'Surveillance, éviter activité, réévaluation.' });
 
       // Modificateurs généraux
       const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -431,7 +704,7 @@
 
       for (const item of out) {
         let pr = item.priority;
-        if (anticoag && (location === 'head' || location === 'neck' || findings.lossOfConsciousness)) pr = 1;
+        if (anticoag && (locations.some(isHeadNeck) || findings.lossOfConsciousness)) pr = 1;
         if (extremeAge && pr > 1) pr -= 1;
         if (persist && pr > 1) pr -= 1;
         item.priority = clamp(pr, 1, 4);
@@ -440,15 +713,98 @@
       out.sort((a, b) => a.priority - b.priority);
       return out;
     }
+    
+    // --- MOTEUR DE DIAGNOSTIC (CONSULTATION) ---
+    function computeConsultDiagnosis({ vitals, symptoms, details, age, hx }) {
+        const out = [];
+        const { fc, spo2, taSys, taDia, hgt, temp } = vitals;
 
+        // Signes de choc / Détresse vitale
+        if (taSys < 90) out.push({ tag: 'État de choc (Hypotension)', priority: 1, advice: 'Remplissage, bilan urgence, transport immédiat.' });
+        if (spo2 < 94) out.push({ tag: 'Détresse respiratoire (Hypoxie)', priority: 1, advice: 'Oxygénothérapie, bilan pulmonaire/cardiaque.' });
+        if (fc > 120 || fc < 50) out.push({ tag: 'Trouble du rythme (Tachy/Brady)', priority: 1, advice: 'ECG, surveillance monitoring, avis cardio.' });
+
+        // Scénarios par symptôme
+        if (symptoms.chestpain) {
+            let prio = (age > 40 || details.includes('irradi')) ? 1 : 2;
+            out.push({ tag: 'Douleur thoracique (SCA suspect)', priority: prio, advice: 'ECG, monitoring, antalgiques, évacuation.' });
+        }
+        if (symptoms.dyspnea && spo2 < 96) {
+            out.push({ tag: 'Dyspnée (OAP/Asthme/EP suspect)', priority: 2, advice: 'Auscultation, O2 si besoin, bilan.' });
+        }
+        if (symptoms.confusion) {
+            let prio = (hgt < 70 || hgt > 250) ? 1 : 2;
+            out.push({ tag: 'Altération état de conscience', priority: prio, advice: 'Contrôle HGT, bilan neuro/métabolique.' });
+        }
+        if (hgt < 70) {
+            out.push({ tag: 'Hypoglycémie', priority: 1, advice: 'Resucrage immédiat (oral ou IV).' });
+        }
+        if (hgt > 250) {
+            out.push({ tag: 'Hyperglycémie', priority: 2, advice: 'Vérifier diabète, hydratation, bilan.' });
+        }
+        if (symptoms.fever) {
+            let prio = (temp > 39 || taSys < 100) ? 2 : 3;
+            out.push({ tag: 'Syndrome infectieux/fièvre', priority: prio, advice: 'Bilan infectieux, paracétamol. Si sepsis (hypoTA), urgence.' });
+        }
+        if (symptoms.abdo) {
+            out.push({ tag: 'Douleur abdominale aiguë', priority: 2, advice: 'Palpation (recherche défense), bilan digestif.' });
+        }
+        if (symptoms.headache && taSys > 160) {
+             out.push({ tag: 'Céphalée (Poussée HTA)', priority: 2, advice: 'Contrôle TA, recherche signes neuro.' });
+        }
+        if (symptoms.dizzy) {
+             out.push({ tag: 'Vertiges', priority: 3, advice: 'Bilan ORL/neuro, rassurer.' });
+        }
+        
+        if (!out.length) {
+            out.push({ tag: 'Consultation non spécifique', priority: 4, advice: 'Réévaluation, antalgiques si besoin.' });
+        }
+
+        // Modificateurs
+        const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+        const extremeAge = Number.isFinite(age) && (age < 18 || age > 65);
+        if (extremeAge) {
+            out.forEach(item => { item.priority = clamp(item.priority - 1, 1, 4); });
+        }
+        
+        out.sort((a, b) => a.priority - b.priority);
+        const uniqueTags = new Set();
+        return out.filter(item => {
+            if (uniqueTags.has(item.tag)) return false;
+            uniqueTags.add(item.tag);
+            return true;
+        });
+    }
+
+    // --- Rendu des Résultats ---
     function renderResults(list) {
       els.results.innerHTML = '';
-      if (!list || !list.length) { els.noResults.style.display = 'block'; els.metaCount.textContent = '—'; return; }
+      if (!list || !list.length) {
+        clearResults();
+        els.noResults.style.display = 'block';
+        return;
+      }
+      
       els.noResults.style.display = 'none';
       els.metaCount.textContent = `${list.length} hypothèse(s)`;
+      
+      // Score Global
+      const minPrio = Math.min(...list.map(item => item.priority));
+      const banners = {
+        1: { text: 'URGENCE VITALE - TRANSPORT IMMÉDIAT', class: 'triage-p1' },
+        2: { text: 'URGENCE RELATIVE - TRANSPORT RECOMMANDÉ', class: 'triage-p2' },
+        3: { text: 'CONSULTATION NÉCESSAIRE - Transport non-urgent', class: 'triage-p3' },
+        4: { text: 'SOINS SUR PLACE / RAS', class: 'triage-p4' }
+      };
+      const banner = banners[minPrio] || banners[4];
+      els.globalTriage.textContent = banner.text;
+      els.globalTriage.className = 'callout ' + banner.class;
+      els.globalTriage.style.display = 'block';
+
+      // Liste des résultats
       for (const item of list) {
         const div = document.createElement('div');
-        div.className = 'result ' + (item.priority === 1 ? 'danger' : item.priority === 2 ? 'success' : '');
+        div.className = 'result ' + (item.priority === 1 ? 'danger' : item.priority <= 2 ? 'success' : '');
         div.innerHTML = `
           <div class="tag">${item.tag}</div>
           <div class="advice">${item.advice}</div>
@@ -457,90 +813,304 @@
         els.results.appendChild(div);
       }
     }
-
-    function getFormValues() {
-      const age = parseInt(els.age.value, 10);
-      const delayHours = parseInt(els.delay.value, 10);
-      return {
-        incident: els.incident.value.trim(),
-        location: els.location.value,
-        pain: Number(els.pain.value),
-        age: Number.isFinite(age) ? age : undefined,
-        delayHours: Number.isFinite(delayHours) ? delayHours : 0,
-        hx: {
-          anticoagulants: !!els.hxAnticoag.checked,
-          diabetes: !!els.hxDiabetes.checked,
-          immunodepression: !!els.hxImmuno.checked,
-        },
-        findings: {
-          bleeding: els.fBleeding.checked,
-          deformity: els.fDeformity.checked,
-          lossOfConsciousness: els.fLoc.checked,
-          gsw: els.fGSW.checked,
-        },
-        interventionStartISO: startAt ? startAt.toISOString() : null
-      };
+    
+    function clearResults() {
+        els.results.innerHTML = '';
+        els.noResults.style.display = 'block';
+        els.metaCount.textContent = '—';
+        els.globalTriage.style.display = 'none';
     }
 
-    function calculate(e) { e && e.preventDefault(); renderResults(computePreDiagnosis(getFormValues())); }
+    // --- Récupération des Données des Formulaires ---
+    function getFormValues(mode) {
+      const isTrauma = mode === 'trauma';
+      const ageVal = parseInt(isTrauma ? els.age.value : els.ageConsult.value, 10);
+      const data = {
+        formMode: isTrauma ? 'trauma' : 'consultation',
+        patientName: (isTrauma ? els.patientName.value : els.patientNameConsult.value).trim(),
+        age: Number.isFinite(ageVal) ? ageVal : undefined,
+        interventionStartISO: startAt ? startAt.toISOString() : null
+      };
+
+      if (isTrauma) {
+        const delayHours = parseInt(els.delay.value, 10);
+        Object.assign(data, {
+          incident: els.incident.value.trim(),
+          locations: [...selectedZones], // Copie du tableau
+          pain: Number(els.pain.value),
+          delayHours: Number.isFinite(delayHours) ? delayHours : 0,
+          hx: {
+            anticoagulants: !!els.hxAnticoag.checked,
+            diabetes: !!els.hxDiabetes.checked,
+            immunodepression: !!els.hxImmuno.checked,
+          },
+          findings: {
+            bleeding: els.fBleeding.checked,
+            deformity: els.fDeformity.checked,
+            lossOfConsciousness: els.fLoc.checked,
+            gsw: els.fGSW.checked,
+            burn: els.fBurn.checked,
+          }
+        });
+      } else {
+        Object.assign(data, {
+          vitals: {
+            fc: parseInt(els.vitalFc.value, 10) || undefined,
+            spo2: parseInt(els.vitalSpo2.value, 10) || undefined,
+            taSys: parseInt(els.vitalTaSys.value, 10) || undefined,
+            taDia: parseInt(els.vitalTaDia.value, 10) || undefined,
+            hgt: parseInt(els.vitalHgt.value, 10) || undefined,
+            temp: parseFloat(els.vitalTemp.value) || undefined,
+          },
+          symptoms: {
+            chestpain: els.symChestpain.checked,
+            dyspnea: els.symDyspnea.checked,
+            fever: els.symFever.checked,
+            nausea: els.symNausea.checked,
+            dizzy: els.symDizzy.checked,
+            confusion: els.symConfusion.checked,
+            abdo: els.symAbdo.checked,
+            headache: els.symHeadache.checked,
+          },
+          details: els.consultDetails.value.trim(),
+          hx: { // ATCD partagés
+            anticoagulants: !!els.hxAnticoag.checked,
+            diabetes: !!els.hxDiabetes.checked,
+            immunodepression: !!els.hxImmuno.checked,
+          },
+        });
+      }
+      return data;
+    }
+
+    // --- Actions Principales (Calculer, Reset) ---
+    function calculate(e) {
+      e && e.preventDefault();
+      const isTrauma = els.formTrauma.style.display !== 'none';
+      if (isTrauma) {
+        renderResults(computeTraumaDiagnosis(getFormValues('trauma')));
+      } else {
+        renderResults(computeConsultDiagnosis(getFormValues('consultation')));
+      }
+    }
 
     function resetForm() {
+      // Trauma
+      els.patientName.value = '';
       els.incident.value = '';
-      els.location.value = 'head';
+      els.locationDisplay.value = 'Cliquer sur le mannequin...';
+      selectedZones = [];
+      mapRegions().forEach(el => el.classList.remove('active'));
       els.pain.value = 5; updatePainLabel();
       els.age.value = ''; els.delay.value = '';
       els.hxAnticoag.checked = false; els.hxDiabetes.checked = false; els.hxImmuno.checked = false;
-      els.fBleeding.checked = false; els.fDeformity.checked = false; els.fLoc.checked = false; els.fGSW.checked = false;
-      els.results.innerHTML = ''; els.noResults.style.display = 'block'; els.metaCount.textContent = '—';
-      highlight(els.location.value);
+      els.fBleeding.checked = false; els.fDeformity.checked = false; els.fLoc.checked = false; els.fGSW.checked = false; els.fBurn.checked = false;
+      
+      // Consultation
+      els.patientNameConsult.value = '';
+      els.ageConsult.value = '';
+      els.vitalFc.value = ''; els.vitalSpo2.value = ''; els.vitalTaSys.value = ''; els.vitalTaDia.value = ''; els.vitalHgt.value = ''; els.vitalTemp.value = '';
+      els.symChestpain.checked = false; els.symDyspnea.checked = false; els.symFever.checked = false; els.symNausea.checked = false;
+      els.symDizzy.checked = false; els.symConfusion.checked = false; els.symAbdo.checked = false; els.symHeadache.checked = false;
+      els.consultDetails.value = '';
+      
+      // Global
+      clearResults();
       startAt = null; els.startPill.textContent = 'Début: —';
+      resetChrono(); resetCountdown();
+    }
+    
+    // --- Journal de Bord (LocalStorage) ---
+    const JOURNAL_KEY = 'triageJournal_v2';
+    
+    function saveToJournal(data) {
+        try {
+            const journal = JSON.parse(localStorage.getItem(JOURNAL_KEY) || '[]');
+            journal.push(data);
+            if (journal.length > 20) journal.shift(); // Garde les 20 derniers
+            localStorage.setItem(JOURNAL_KEY, JSON.stringify(journal));
+        } catch (e) { console.error("Erreur sauvegarde journal:", e); }
+    }
+    
+    function loadJournal() {
+        els.journalContent.innerHTML = '';
+        let journal = [];
+        try { journal = JSON.parse(localStorage.getItem(JOURNAL_KEY) || '[]'); }
+        catch (e) { console.error("Erreur lecture journal:", e); }
+        
+        if (!journal.length) {
+            els.journalContent.innerHTML = '<p>Aucune intervention enregistrée.</p>'; return;
+        }
+        
+        journal.reverse().forEach((entry, index) => { // Plus récent en premier
+            const trueIndex = journal.length - 1 - index;
+            const div = document.createElement('div');
+            div.className = 'journal-entry';
+            const prioTag = entry.results && entry.results.length ? entry.results[0].tag : 'N/A';
+            const prioNum = entry.results && entry.results.length ? entry.results[0].priority : 'N/A';
+            div.innerHTML = `
+              <div><strong>${new Date(entry.timestamp).toLocaleString()}</strong> (${entry.formMode || 'trauma'})</div>
+              <div><strong>Patient:</strong> ${entry.patientName || '—'}</div>
+              <div><strong>Diagnostic:</strong> ${prioTag} (P${prioNum})</div>
+              <button class="btn ghost btn-journal-load" data-index="${trueIndex}">Recharger ce cas</button>
+            `;
+            els.journalContent.appendChild(div);
+        });
+        
+        document.querySelectorAll('.btn-journal-load').forEach(btn => {
+            btn.addEventListener('click', (e) => loadCaseFromJournal(e.target.dataset.index));
+        });
     }
 
+    function loadCaseFromJournal(index) {
+        let journal = [];
+        try { journal = JSON.parse(localStorage.getItem(JOURNAL_KEY) || '[]'); }
+        catch (e) { return; }
+        
+        const entry = journal[index];
+        if (!entry) return;
+        
+        resetForm();
+        
+        // Données communes
+        els.patientName.value = entry.patientName || '';
+        els.patientNameConsult.value = entry.patientName || '';
+        const ageStr = (entry.age !== undefined) ? String(entry.age) : '';
+        els.age.value = ageStr;
+        els.ageConsult.value = ageStr;
+        if (entry.interventionStartISO) {
+            startAt = new Date(entry.interventionStartISO);
+            els.startPill.textContent = 'Début: ' + fmtDateTime(startAt);
+        }
+        if (entry.hx) {
+            els.hxAnticoag.checked = !!entry.hx.anticoagulants;
+            els.hxDiabetes.checked = !!entry.hx.diabetes;
+            els.hxImmuno.checked = !!entry.hx.immunodepression;
+        }
+
+        if (entry.formMode === 'consultation') {
+            setActiveTab('consultation');
+            if (entry.vitals) {
+                els.vitalFc.value = entry.vitals.fc || '';
+                els.vitalSpo2.value = entry.vitals.spo2 || '';
+                els.vitalTaSys.value = entry.vitals.taSys || '';
+                els.vitalTaDia.value = entry.vitals.taDia || '';
+                els.vitalHgt.value = entry.vitals.hgt || '';
+                els.vitalTemp.value = entry.vitals.temp || '';
+            }
+            if (entry.symptoms) {
+                els.symChestpain.checked = !!entry.symptoms.chestpain;
+                els.symDyspnea.checked = !!entry.symptoms.dyspnea;
+                els.symFever.checked = !!entry.symptoms.fever;
+                els.symNausea.checked = !!entry.symptoms.nausea;
+                els.symDizzy.checked = !!entry.symptoms.dizzy;
+                els.symConfusion.checked = !!entry.symptoms.confusion;
+                els.symAbdo.checked = !!entry.symptoms.abdo;
+                els.symHeadache.checked = !!entry.symptoms.headache;
+            }
+            els.consultDetails.value = entry.details || '';
+        } else {
+            // Défaut sur Trauma
+            setActiveTab('trauma');
+            els.incident.value = entry.incident || '';
+            selectedZones = entry.locations || [];
+            els.locationDisplay.value = selectedZones.join(', ') || 'Cliquer sur le mannequin...';
+            mapRegions().forEach(el => {
+                el.classList.toggle('active', selectedZones.includes(el.dataset.zone));
+            });
+            els.pain.value = entry.pain || 5; updatePainLabel();
+            els.delay.value = entry.delayHours || '';
+            if (entry.findings) {
+                els.fBleeding.checked = !!entry.findings.bleeding;
+                els.fDeformity.checked = !!entry.findings.deformity;
+                els.fLoc.checked = !!entry.findings.lossOfConsciousness;
+                els.fGSW.checked = !!entry.findings.gsw;
+                els.fBurn.checked = !!entry.findings.burn;
+            }
+        }
+        
+        renderResults(entry.results || []);
+        els.journalModal.style.display = 'none';
+    }
+
+    function clearJournal() {
+        if (confirm('Voulez-vous vraiment vider tout le journal de bord ?')) {
+            localStorage.removeItem(JOURNAL_KEY);
+            loadJournal();
+        }
+    }
+    
+    function getResultsForStorage() {
+        return Array.from(els.results.querySelectorAll('.result')).map(div => ({
+            tag: div.querySelector('.tag')?.textContent || '',
+            priority: Number((div.querySelector('.prio')?.textContent || '').replace(/[^0-9]/g,'')),
+            advice: div.querySelector('.advice')?.textContent || ''
+        }));
+    }
+
+    // --- Export / Copie ---
     function exportJSON() {
-      const data = {
-        ...getFormValues(),
-        results: Array.from(els.results.querySelectorAll('.result')).map(div => ({
-          tag: div.querySelector('.tag')?.textContent || '',
-          priority: Number((div.querySelector('.prio')?.textContent || '').replace(/[^0-9]/g,'')),
-        })),
-        timestamp: new Date().toISOString()
+      const isTrauma = els.formTrauma.style.display !== 'none';
+      const data = getFormValues(isTrauma ? 'trauma' : 'consultation');
+      const fullData = {
+          ...data,
+          results: getResultsForStorage(),
+          timestamp: new Date().toISOString()
       };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      saveToJournal(fullData); // Sauvegarde lors de l'export
+      
+      const blob = new Blob([JSON.stringify(fullData, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = `triage_case_${Date.now()}.json`;
+      const a = document.createElement('a'); a.href = url; a.download = `ems_case_${Date.now()}.json`;
       document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
     }
 
     function copySummary() {
-      const v = getFormValues();
-      const resCards = els.results.querySelectorAll('.result');
-      let txt = `Résumé RP — Trauma Triage\n`;
+      const isTrauma = els.formTrauma.style.display !== 'none';
+      const v = getFormValues(isTrauma ? 'trauma' : 'consultation');
+      const resData = getResultsForStorage();
+      
+      // Sauvegarde lors de la copie
+      saveToJournal({ ...v, results: resData, timestamp: new Date().toISOString() });
+      
+      let txt = `Résumé RP — ${isTrauma ? 'Triage Trauma' : 'Consultation'}\n`;
       if (v.interventionStartISO) {
-        const dt = new Date(v.interventionStartISO);
-        txt += `Début intervention: ${dt.toLocaleString()}\n`;
+        txt += `Début intervention: ${fmtDateTime(new Date(v.interventionStartISO))}\n`;
       }
-      txt += `Incident: ${v.incident || '—'}\n`;
-      txt += `Zone: ${v.location}\nDouleur: ${v.pain}/10\n`;
+      txt += `Patient: ${v.patientName || '—'}\n`;
       if (v.age !== undefined) txt += `Âge: ${v.age}\n`;
-      if (v.delayHours) txt += `Délai: ${v.delayHours}h\n`;
+
       const atcd = [];
-      if (v.hx.anticoagulants) atcd.push('anticoagulants/AA');
+      if (v.hx.anticoagulants) atcd.push('anticoagulants');
       if (v.hx.diabetes) atcd.push('diabète');
       if (v.hx.immunodepression) atcd.push('immunodépression');
       if (atcd.length) txt += `ATCD: ${atcd.join(', ')}\n`;
-      if (v.findings.gsw) txt += `Signes: blessure par balle (GSW)\n`;
-      if (v.findings.bleeding) txt += `Signes: saignement important\n`;
-      if (v.findings.deformity) txt += `Signes: déformation\n`;
-      if (v.findings.lossOfConsciousness) txt += `Signes: perte de conscience/confusion\n`;
-      if (resCards.length) {
-        txt += `Résultats:\n`;
-        resCards.forEach(card => {
-          const t = card.querySelector('.tag')?.textContent || '';
-          const p = card.querySelector('.prio')?.textContent.replace(/[^0-9]/g,'') || '';
-          const a = card.querySelector('.advice')?.textContent || '';
-          txt += ` - ${t} (P${p}) — ${a}\n`;
+      txt += `\n--- ÉVALUATION ---\n`;
+      
+      if (isTrauma) {
+          txt += `Incident: ${v.incident || '—'}\n`;
+          if (v.delayHours) txt += `Délai: ${v.delayHours}h\n`;
+          txt += `Zone(s): ${v.locations.join(', ') || '—'}\nDouleur: ${v.pain}/10\n`;
+          const signes = [];
+          if (v.findings.gsw) signes.push('blessure par balle (GSW)');
+          if (v.findings.bleeding) signes.push('saignement important');
+          if (v.findings.deformity) signes.push('déformation');
+          if (v.findings.lossOfConsciousness) signes.push('PDC/confusion');
+          if (v.findings.burn) signes.push('brûlure');
+          if (signes.length) txt += `Signes: ${signes.join(', ')}\n`;
+      } else {
+          txt += `Symptômes: ${Object.entries(v.symptoms).filter(([k,v]) => v).map(([k]) => k).join(', ') || 'aucun'}\n`;
+          txt += `Vitals: FC:${v.vitals.fc || 'N/A'} | SpO2:${v.vitals.spo2 || 'N/A'}% | TA:${v.vitals.taSys || 'N/A'}/${v.vitals.taDia || 'N/A'} | HGT:${v.vitals.hgt || 'N/A'} | T°:${v.vitals.temp || 'N/A'}\n`;
+          if (v.details) txt += `Détails: ${v.details}\n`;
+      }
+      
+      if (resData.length) {
+        txt += `\n--- RÉSULTATS ---\n`;
+        resData.forEach(item => {
+          txt += ` - ${item.tag} (P${item.priority}) — ${item.advice}\n`;
         });
       } else { txt += `Résultats: —\n`; }
+      
       navigator.clipboard.writeText(txt).then(() => {
         const old = els.btnCopy.textContent;
         els.btnCopy.textContent = '✔ Résumé copié';
@@ -548,15 +1118,37 @@
       });
     }
 
-    document.getElementById('year').textContent = new Date().getFullYear();
+    // --- Initialisation et Écouteurs ---
+    els.year.textContent = new Date().getFullYear();
+    // Tabs
+    els.btnTabTrauma.addEventListener('click', () => setActiveTab('trauma'));
+    els.btnTabConsult.addEventListener('click', () => setActiveTab('consultation'));
+    // Header
+    els.btnStart.addEventListener('click', setStartNow);
+    els.btnPrint.addEventListener('click', () => window.print());
+    // Timers
+    els.btnChronoStart.addEventListener('click', startChrono);
+    els.btnChronoStop.addEventListener('click', stopChrono);
+    els.btnChronoReset.addEventListener('click', resetChrono);
+    els.btnCountdownStart.addEventListener('click', startCountdown);
+    els.btnCountdownStop.addEventListener('click', stopCountdown);
+    els.btnCountdownReset.addEventListener('click', resetCountdown);
+    // Formulaires
     els.btnCalc.addEventListener('click', calculate);
     els.btnReset.addEventListener('click', resetForm);
+    // Résultats
     els.btnExport.addEventListener('click', exportJSON);
-    els.btnPrint.addEventListener('click', () => window.print());
     els.btnCopy.addEventListener('click', copySummary);
+    // Journal
+    els.btnJournal.addEventListener('click', () => { loadJournal(); els.journalModal.style.display = 'block'; });
+    els.btnJournalClose.addEventListener('click', () => els.journalModal.style.display = 'none');
+    els.btnJournalClear.addEventListener('click', clearJournal);
+    els.journalModal.addEventListener('click', (e) => { if (e.target === els.journalModal) els.journalModal.style.display = 'none'; });
 
-    // Initial
-    resetForm();
+    // Initialisation
+    updatePainLabel();
+    setActiveTab('trauma'); // Ouvre sur l'onglet Trauma
+    clearResults();
   </script>
 </body>
 </html>
