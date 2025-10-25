@@ -95,7 +95,17 @@
       font-size:15px;
     }
     .btn.secondary { background:transparent; border:1px solid #334155; color: var(--text); }
-    .btn.ghost { background:transparent; color: var(--muted); padding: 8px 10px; }
+    /* CHANGEMENT : Ajout d'une bordure pour que les boutons 'ghost' soient identifiables */
+    .btn.ghost {
+      background:transparent;
+      color: var(--muted);
+      padding: 8px 10px;
+      border: 1px solid var(--border); /* <-- AJOUTÉ */
+    }
+    .btn.ghost:hover {
+      border-color: #334155;
+      color: var(--text);
+    }
     .btn:disabled { opacity:.5; cursor:not-allowed; }
     .section-title { font-size:18px; font-weight:700; margin: 0 0 12px; }
     .results { display:grid; gap:12px; }
@@ -135,9 +145,9 @@
     .success { border-left-color: var(--accent-2); }
     .danger { border-left-color: var(--danger); }
     .tabs { display:flex; gap:10px; margin-bottom:16px; }
-    .timers { background:transparent; border:none; box-shadow:none; padding:0; }
-    .timer-display { font-size:24px; font-family: ui-monospace, monospace; color:var(--text); font-weight:600; margin-bottom:8px; }
-
+    
+    /* CHANGEMENT : Règle CSS .timers supprimée. La section utilisera .card par défaut */
+    
     /* === Body-map === */
     .bodymap { display:flex; align-items:center; gap:12px; margin-top:8px; }
     .bodymap .mapwrap {
@@ -196,14 +206,14 @@
         </div>
       </div>
       <div class="row">
-        <button class="btn ghost" id="btn-start" title="Mémoriser l'heure de début">🕒 Début inter.</button>
+        <button class="btn secondary" id="btn-start" title="Mémoriser l'heure de début">🕒 Début inter.</button>
         <span class="pill" id="start-pill" aria-live="polite">Début: —</span>
-        <button class="btn ghost" id="btn-journal">Journal de Bord</button>
-        <button class="btn ghost" id="btn-print" title="Imprimer / PDF">Imprimer</button>
+        <button class="btn secondary" id="btn-journal">Journal de Bord</button>
+        <button class="btn secondary" id="btn-print" title="Imprimer / PDF">Imprimer</button>
       </div>
     </header>
 
-    <section class="card timers" style="margin-bottom:16px;">
+    <section class="card" style="margin-bottom:16px;">
       <div class="row" style="justify-content: space-around; gap: 20px;">
         <div>
           <label>Chronomètre</label>
@@ -424,7 +434,7 @@
         <div id="no-results" class="callout" style="display:none; margin-top:8px">Aucun résultat. Saisissez des informations puis cliquez <span class="kbd">Calculer</span>.</div>
 
         <button class="btn" id="btn-copy" style="margin-top:16px; width:100%">📋 Copier le résumé</button>
-        <button class="btn ghost" id="btn-export-json" title="Exporter le cas (JSON)" style="width:100%; margin-top:8px;">Exporter (JSON)</button>
+        <button class="btn secondary" id="btn-export-json" title="Exporter le cas (JSON)" style="width:100%; margin-top:8px;">Exporter (JSON)</button>
       </section>
     </div>
 
