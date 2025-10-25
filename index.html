@@ -95,12 +95,11 @@
       font-size:15px;
     }
     .btn.secondary { background:transparent; border:1px solid #334155; color: var(--text); }
-    /* CHANGEMENT : Ajout d'une bordure pour que les boutons 'ghost' soient identifiables */
     .btn.ghost {
       background:transparent;
       color: var(--muted);
       padding: 8px 10px;
-      border: 1px solid var(--border); /* <-- AJOUTÉ */
+      border: 1px solid var(--border);
     }
     .btn.ghost:hover {
       border-color: #334155;
@@ -131,6 +130,7 @@
     .triage-p2 { background: rgba(245, 158, 11, .1); border-color: rgba(245, 158, 11, .35); color:#fde68a; }
     .triage-p3 { background: rgba(34, 197, 94, .1); border-color: rgba(34, 197, 94, .3); color: #86efac; }
     .triage-p4 { background: rgba(148, 163, 184, .1); border-color: rgba(148, 163, 184, .3); color: #cbd5e1; }
+    
     footer { margin-top: 24px; color: #94a3b8; font-size: 12px; }
     .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; background:#0b1220; border:1px solid #1f2937; padding:2px 6px; border-radius:6px; }
     .titlebar { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:16px; }
@@ -144,9 +144,7 @@
     }
     .success { border-left-color: var(--accent-2); }
     .danger { border-left-color: var(--danger); }
-    .tabs { display:flex; gap:10px; margin-bottom:16px; }
-    
-    /* CHANGEMENT : Règle CSS .timers supprimée. La section utilisera .card par défaut */
+    .tabs { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
     
     /* === Body-map === */
     .bodymap { display:flex; align-items:center; gap:12px; margin-top:8px; }
@@ -173,6 +171,33 @@
     .vitals-grid label:hover {
       color: var(--text);
     }
+
+    /* === Triage START === */
+    .start-step {
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .start-step h3 {
+      font-size: 1.25em;
+      margin-top: 0;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .start-step .btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .start-step .btn {
+      padding: 16px;
+      font-size: 1.1em;
+      text-align: center;
+    }
+    .btn-start-yes { background-color: var(--accent-2); color: var(--bg); font-weight: 700; }
+    .btn-start-no { background-color: var(--danger); }
+
 
     /* === Journal Modal === */
     .modal-overlay {
@@ -240,9 +265,10 @@
     <div class="tabs">
       <button class="btn" id="btn-tab-trauma" aria-pressed="true">Mode Trauma</button>
       <button class="btn secondary" id="btn-tab-consult" aria-pressed="false">Mode Consultation</button>
+      <button class="btn secondary" id="btn-tab-start" aria-pressed="false">Triage de Masse</button>
     </div>
 
-    <div class="grid">
+    <div class="grid" id="main-grid">
       <div>
         <section class="card" id="form-trauma" aria-labelledby="form-title-trauma">
           <div class="titlebar">
@@ -415,13 +441,62 @@
           </div>
         </section>
 
-        <div class="btns" style="margin-top:16px;">
+        <section class="card" id="form-start" aria-labelledby="form-title-start" style="display:none;">
+          <div class="titlebar">
+            <div class="section-title" id="form-title-start">Triage de Masse (Méthode START Adaptée)</div>
+            <button class="btn secondary" id="btn-start-reset">Nouvelle Victime</button>
+          </div>
+          
+          <div class="start-step" id="start-step-1">
+            <h3>Étape 1 : La victime marche ?</h3>
+            <p>Demandez aux victimes de se déplacer vers un point de ralliement.</p>
+            <div class="btns">
+              <button class="btn btn-start-yes" id="start-1-yes">OUI</button>
+              <button class="btn btn-start-no" id="start-1-no">NON</button>
+            </div>
+          </div>
+
+          <div class="start-step" id="start-step-2" style="display:none;">
+            <h3>Étape 2 : La victime respire ?</h3>
+            <p>Libérez les voies aériennes (LVA). La victime respire-t-elle ?</p>
+            <div class="btns">
+              <button class="btn btn-start-yes" id="start-2-yes">OUI</button>
+              <button class="btn btn-start-no" id="start-2-no">NON</button>
+            </div>
+          </div>
+
+          <div class="start-step" id="start-step-3" style="display:none;">
+            <h3>Étape 3 : Bilan RPM (Respiration / Pouls)</h3>
+            <p>Au moins un des critères suivants est-il présent ?</p>
+            <ul>
+              <li>Fréquence respiratoire > 30 / min</li>
+              <li>Pouls radial absent</li>
+            </ul>
+            <div class="btns">
+              <button class="btn btn-start-no" id="start-3-yes">OUI (Anormal)</button>
+              <button class="btn btn-start-yes" id="start-3-no">NON (Normal)</button>
+            </div>
+          </div>
+          
+          <div class="start-step" id="start-step-4" style="display:none;">
+            <h3>Étape 4 : Bilan M (Mental)</h3>
+            <p>La victime exécute-t-elle un ordre simple ? ("Serrez-moi la main", "Ouvrez les yeux")</p>
+            <div class="btns">
+              <button class="btn btn-start-yes" id="start-4-yes">OUI</button>
+              <button class="btn btn-start-no" id="start-4-no">NON</button>
+            </div>
+          </div>
+
+        </section>
+
+
+        <div class="btns" style="margin-top:16px;" id="form-buttons">
           <button class="btn" id="btn-calc">Calculer</button>
           <button class="btn secondary" id="btn-reset" type="button">Réinitialiser</button>
         </div>
       </div>
 
-      <section class="card" aria-labelledby="res-title">
+      <section class="card" id="results-card" aria-labelledby="res-title">
         <div class="titlebar">
           <div class="section-title" id="res-title">Résultats (pré-diagnostic)</div>
           <div class="prio" id="meta-count">—</div>
@@ -487,8 +562,12 @@
       // Tabs
       btnTabTrauma: document.getElementById('btn-tab-trauma'),
       btnTabConsult: document.getElementById('btn-tab-consult'),
+      btnTabStart: document.getElementById('btn-tab-start'),
+      // Formulaires
       formTrauma: document.getElementById('form-trauma'),
       formConsult: document.getElementById('form-consult'),
+      formStart: document.getElementById('form-start'),
+      formButtons: document.getElementById('form-buttons'),
       // Formulaire Trauma
       patientName: document.getElementById('patient-name'),
       incident: document.getElementById('incident'),
@@ -526,10 +605,25 @@
       symAbdo: document.getElementById('sym-abdo'),
       symHeadache: document.getElementById('sym-headache'),
       consultDetails: document.getElementById('consult-details'),
+      // Formulaire START
+      btnStartReset: document.getElementById('btn-start-reset'),
+      startStep1: document.getElementById('start-step-1'),
+      startStep2: document.getElementById('start-step-2'),
+      startStep3: document.getElementById('start-step-3'),
+      startStep4: document.getElementById('start-step-4'),
+      start1Yes: document.getElementById('start-1-yes'),
+      start1No: document.getElementById('start-1-no'),
+      start2Yes: document.getElementById('start-2-yes'),
+      start2No: document.getElementById('start-2-no'),
+      start3Yes: document.getElementById('start-3-yes'),
+      start3No: document.getElementById('start-3-no'),
+      start4Yes: document.getElementById('start-4-yes'),
+      start4No: document.getElementById('start-4-no'),
       // Boutons Formulaire
       btnCalc: document.getElementById('btn-calc'),
       btnReset: document.getElementById('btn-reset'),
       // Résultats
+      resultsCard: document.getElementById('results-card'),
       globalTriage: document.getElementById('global-triage'),
       results: document.getElementById('results'),
       noResults: document.getElementById('no-results'),
@@ -559,31 +653,54 @@
 
     // --- Gestion des Tabs ---
     function setActiveTab(tabName) {
-      if (tabName === 'trauma') {
-        els.formTrauma.style.display = 'block';
-        els.formConsult.style.display = 'none';
-        els.btnTabTrauma.className = 'btn';
-        els.btnTabTrauma.setAttribute('aria-pressed', 'true');
-        els.btnTabConsult.className = 'btn secondary';
-        els.btnTabConsult.setAttribute('aria-pressed', 'false');
-      } else {
-        els.formTrauma.style.display = 'none';
-        els.formConsult.style.display = 'block';
-        els.btnTabTrauma.className = 'btn secondary';
-        els.btnTabTrauma.setAttribute('aria-pressed', 'false');
-        els.btnTabConsult.className = 'btn';
-        els.btnTabConsult.setAttribute('aria-pressed', 'true');
+      // Cacher tous les formulaires
+      els.formTrauma.style.display = 'none';
+      els.formConsult.style.display = 'none';
+      els.formStart.style.display = 'none';
+      // Afficher les boutons de formulaire par défaut
+      els.formButtons.style.display = 'flex';
+      // Mettre tous les onglets en 'secondary'
+      els.btnTabTrauma.className = 'btn secondary';
+      els.btnTabConsult.className = 'btn secondary';
+      els.btnTabStart.className = 'btn secondary';
+      els.btnTabTrauma.setAttribute('aria-pressed', 'false');
+      els.btnTabConsult.setAttribute('aria-pressed', 'false');
+      els.btnTabStart.setAttribute('aria-pressed', 'false');
+
+      // Activer le bon onglet
+      switch(tabName) {
+        case 'consultation':
+          els.formConsult.style.display = 'block';
+          els.btnTabConsult.className = 'btn';
+          els.btnTabConsult.setAttribute('aria-pressed', 'true');
+          break;
+        case 'start':
+          els.formStart.style.display = 'block';
+          els.btnTabStart.className = 'btn';
+          els.btnTabStart.setAttribute('aria-pressed', 'true');
+          els.formButtons.style.display = 'none'; // Cacher Calculer/Reset
+          resetStartTriage(); // Réinitialiser l'arbre de décision
+          break;
+        case 'trauma':
+        default:
+          els.formTrauma.style.display = 'block';
+          els.btnTabTrauma.className = 'btn';
+          els.btnTabTrauma.setAttribute('aria-pressed', 'true');
+          break;
       }
-      // Synchroniser le nom du patient entre les formulaires
+      
+      // Synchroniser les champs communs (Nom/Âge)
       if (tabName === 'trauma') {
         els.patientNameConsult.value = els.patientName.value;
         els.ageConsult.value = els.age.value;
-      } else {
+      } else if (tabName === 'consultation') {
         els.patientName.value = els.patientNameConsult.value;
         els.age.value = els.ageConsult.value;
       }
+      
       clearResults();
     }
+    
     // Synchronisation des champs communs
     els.patientName.addEventListener('input', () => els.patientNameConsult.value = els.patientName.value);
     els.patientNameConsult.addEventListener('input', () => els.patientName.value = els.patientNameConsult.value);
@@ -699,7 +816,7 @@
       els.countdownInput.disabled = false;
     }
 
-    // --- MOTEUR DE DIAGNOSTIC (TRAUMA) - REWORKED ---
+    // --- MOTEUR DE DIAGNOSTIC (TRAUMA) ---
     function computeTraumaDiagnosis({ locations, pain, findings, age, delayHours, hx }) {
       const out = [];
       const p = Number(pain);
@@ -933,6 +1050,24 @@
         els.results.appendChild(div);
       }
     }
+
+    // Fonction dédiée pour le Triage START
+    function renderStartResult(priority, bannerText, bannerClass, adviceText) {
+      const tag = bannerText; // P1 - ROUGE, P2 - JAUNE, etc.
+      
+      // 1. Afficher le bandeau global
+      els.globalTriage.textContent = bannerText;
+      els.globalTriage.className = 'callout ' + bannerClass;
+      els.globalTriage.style.display = 'block';
+
+      // 2. Afficher la carte de conseil unique
+      const resultItem = {
+        tag: tag,
+        priority: priority,
+        advice: adviceText
+      };
+      renderResults([resultItem]); // Utilise renderResults avec un seul item
+    }
     
     function clearResults() {
         els.results.innerHTML = '';
@@ -944,9 +1079,11 @@
     // --- Récupération des Données des Formulaires ---
     function getFormValues(mode) {
       const isTrauma = mode === 'trauma';
+      const isConsult = mode === 'consultation';
+      
       const ageVal = parseInt(isTrauma ? els.age.value : els.ageConsult.value, 10);
       const data = {
-        formMode: isTrauma ? 'trauma' : 'consultation',
+        formMode: mode,
         patientName: (isTrauma ? els.patientName.value : els.patientNameConsult.value).trim(),
         age: Number.isFinite(ageVal) ? ageVal : undefined,
         interventionStartISO: startAt ? startAt.toISOString() : null
@@ -972,7 +1109,7 @@
             burn: els.fBurn.checked,
           }
         });
-      } else {
+      } else if (isConsult) {
         Object.assign(data, {
           vitals: {
             fc: parseInt(els.vitalFc.value, 10) || undefined,
@@ -1000,6 +1137,7 @@
           },
         });
       }
+      // Le mode 'start' n'a pas de données de formulaire à part celles du résultat
       return data;
     }
 
@@ -1034,12 +1172,68 @@
       els.symDizzy.checked = false; els.symConfusion.checked = false; els.symAbdo.checked = false; els.symHeadache.checked = false;
       els.consultDetails.value = '';
       
+      // START
+      resetStartTriage();
+
       // Global
       clearResults();
       startAt = null; els.startPill.textContent = 'Début: —';
       resetChrono(); resetCountdown();
     }
     
+    // --- Logique Triage START ---
+    function resetStartTriage() {
+      els.startStep1.style.display = 'block';
+      els.startStep2.style.display = 'none';
+      els.startStep3.style.display = 'none';
+      els.startStep4.style.display = 'none';
+      clearResults();
+    }
+
+    function setupStartTriage() {
+      els.btnStartReset.addEventListener('click', resetStartTriage);
+
+      // Étape 1: Marche ?
+      els.start1Yes.addEventListener('click', () => {
+        renderStartResult(3, 'PRIORITÉ 3 (VERT)', 'triage-p3', 'Victime valide, peut marcher. Diriger vers zone de soins P3.');
+      });
+      els.start1No.addEventListener('click', () => {
+        els.startStep1.style.display = 'none';
+        els.startStep2.style.display = 'block';
+      });
+
+      // Étape 2: Respire ?
+      els.start2Yes.addEventListener('click', () => {
+        els.startStep2.style.display = 'none';
+        els.startStep3.style.display = 'block';
+      });
+      els.start2No.addEventListener('click', () => {
+        // RP ADAPTÉ : Pas de P0/Noir. Devient P1.
+        renderStartResult(1, 'PRIORITÉ 1 (ROUGE)', 'triage-p1', 'Patient en arrêt respiratoire. Ventilation/RCP immédiate et transport.');
+      });
+
+      // Étape 3: RPM
+      els.start3Yes.addEventListener('click', () => {
+        // RPM Anormal -> P1
+        renderStartResult(1, 'PRIORITÉ 1 (ROUGE)', 'triage-p1', 'Respiration > 30/min ou pouls radial absent. Signes de choc. Transport immédiat.');
+      });
+      els.start3No.addEventListener('click', () => {
+        // RPM Normal -> Étape 4
+        els.startStep3.style.display = 'none';
+        els.startStep4.style.display = 'block';
+      });
+      
+      // Étape 4: Mental
+      els.start4Yes.addEventListener('click', () => {
+        // Ordres OK -> P2
+        renderStartResult(2, 'PRIORITÉ 2 (JAUNE)', 'triage-p2', 'Patient stable mais ne peut marcher. Ordres simples OK. Transport différé.');
+      });
+      els.start4No.addEventListener('click', () => {
+        // Ordres NOK -> P1
+        renderStartResult(1, 'PRIORITÉ 1 (ROUGE)', 'triage-p1', 'N\'exécute pas les ordres simples (altération neuro). Transport immédiat.');
+      });
+    }
+
     // --- Journal de Bord (LocalStorage) ---
     const JOURNAL_KEY = 'triageJournal_v2';
     
@@ -1129,8 +1323,7 @@
                 els.symHeadache.checked = !!entry.symptoms.headache;
             }
             els.consultDetails.value = entry.details || '';
-        } else {
-            // Défaut sur Trauma
+        } else if (entry.formMode === 'trauma') {
             setActiveTab('trauma');
             els.incident.value = entry.incident || '';
             selectedZones = entry.locations || [];
@@ -1148,6 +1341,7 @@
                 els.fBurn.checked = !!entry.findings.burn;
             }
         }
+        // Le mode 'start' n'a pas de formulaire à recharger, juste les résultats
         
         renderResults(entry.results || []);
         els.journalModal.style.display = 'none';
@@ -1170,8 +1364,11 @@
 
     // --- Export / Copie ---
     function exportJSON() {
-      const isTrauma = els.formTrauma.style.display !== 'none';
-      const data = getFormValues(isTrauma ? 'trauma' : 'consultation');
+      let mode = 'trauma';
+      if (els.formConsult.style.display !== 'none') mode = 'consultation';
+      if (els.formStart.style.display !== 'none') mode = 'start';
+      
+      const data = getFormValues(mode);
       const fullData = {
           ...data,
           results: getResultsForStorage(),
@@ -1186,28 +1383,35 @@
     }
 
     function copySummary() {
-      const isTrauma = els.formTrauma.style.display !== 'none';
-      const v = getFormValues(isTrauma ? 'trauma' : 'consultation');
+      let mode = 'trauma';
+      if (els.formConsult.style.display !== 'none') mode = 'consultation';
+      if (els.formStart.style.display !== 'none') mode = 'start';
+      
+      const v = getFormValues(mode);
       const resData = getResultsForStorage();
       
       // Sauvegarde lors de la copie
       saveToJournal({ ...v, results: resData, timestamp: new Date().toISOString() });
       
-      let txt = `Résumé RP — ${isTrauma ? 'Triage Trauma' : 'Consultation'}\n`;
+      let txt = `Résumé RP — ${mode === 'trauma' ? 'Triage Trauma' : (mode === 'consultation' ? 'Consultation' : 'Triage de Masse')}\n`;
       if (v.interventionStartISO) {
         txt += `Début intervention: ${fmtDateTime(new Date(v.interventionStartISO))}\n`;
       }
-      txt += `Patient: ${v.patientName || '—'}\n`;
-      if (v.age !== undefined) txt += `Âge: ${v.age}\n`;
+      if (mode !== 'start') {
+          txt += `Patient: ${v.patientName || '—'}\n`;
+          if (v.age !== undefined) txt += `Âge: ${v.age}\n`;
 
-      const atcd = [];
-      if (v.hx.anticoagulants) atcd.push('anticoagulants');
-      if (v.hx.diabetes) atcd.push('diabète');
-      if (v.hx.immunodepression) atcd.push('immunodépression');
-      if (atcd.length) txt += `ATCD: ${atcd.join(', ')}\n`;
-      txt += `\n--- ÉVALUATION ---\n`;
+          const atcd = [];
+          if (v.hx.anticoagulants) atcd.push('anticoagulants');
+          if (v.hx.diabetes) atcd.push('diabète');
+          if (v.hx.immunodepression) atcd.push('immunodépression');
+          if (atcd.length) txt += `ATCD: ${atcd.join(', ')}\n`;
+          txt += `\n--- ÉVALUATION ---\n`;
+      } else {
+          txt += `\n--- ÉVALUATION TRIAGE START ---\n`;
+      }
       
-      if (isTrauma) {
+      if (mode === 'trauma') {
           txt += `Incident: ${v.incident || '—'}\n`;
           if (v.delayHours) txt += `Délai: ${v.delayHours}h\n`;
           txt += `Zone(s): ${v.locations.join(', ') || '—'}\nDouleur: ${v.pain}/10\n`;
@@ -1218,7 +1422,7 @@
           if (v.findings.lossOfConsciousness) signes.push('PDC/confusion');
           if (v.findings.burn) signes.push('brûlure');
           if (signes.length) txt += `Signes: ${signes.join(', ')}\n`;
-      } else {
+      } else if (mode === 'consultation') {
           txt += `Symptômes: ${Object.entries(v.symptoms).filter(([k,v]) => v).map(([k]) => k.replace('sym-','')).join(', ') || 'aucun'}\n`;
           txt += `Vitals: FC:${v.vitals.fc || 'N/A'} | SpO2:${v.vitals.spo2 || 'N/A'}% | TA:${v.vitals.taSys || 'N/A'}/${v.vitals.taDia || 'N/A'} | HGT:${v.vitals.hgt || 'N/A'} | T°:${v.vitals.temp || 'N/A'}\n`;
           if (v.details) txt += `Détails: ${v.details}\n`;
@@ -1275,6 +1479,7 @@
     // Tabs
     els.btnTabTrauma.addEventListener('click', () => setActiveTab('trauma'));
     els.btnTabConsult.addEventListener('click', () => setActiveTab('consultation'));
+    els.btnTabStart.addEventListener('click', () => setActiveTab('start'));
     // Header
     els.btnStart.addEventListener('click', setStartNow);
     els.btnPrint.addEventListener('click', () => window.print());
@@ -1288,6 +1493,8 @@
     // Formulaires
     els.btnCalc.addEventListener('click', calculate);
     els.btnReset.addEventListener('click', resetForm);
+    // Triage START
+    setupStartTriage();
     // Résultats
     els.btnExport.addEventListener('click', exportJSON);
     els.btnCopy.addEventListener('click', copySummary);
