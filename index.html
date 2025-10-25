@@ -79,6 +79,16 @@
     .bm-region:hover, .bm-region:focus { outline:none; fill:#111a2e; stroke:#7c89ff; }
     .bm-region.active { fill:rgba(99,102,241,.28); stroke:#8b5cf6; }
 
+    /* === Vitals Cliquables === */
+    .vitals-grid label {
+      cursor: pointer;
+      text-decoration: underline dashed 1px var(--muted);
+      user-select: none;
+    }
+    .vitals-grid label:hover {
+      color: var(--text);
+    }
+
     /* === Journal Modal === */
     .modal-overlay {
       display: none; position: fixed; z-index: 100;
@@ -180,37 +190,37 @@
                   <svg id="bodymap-front" viewBox="0 0 200 360" width="100%" role="img" aria-labelledby="bmTitleF">
                     <title id="bmTitleF">Body-map mannequin (face)</title>
                     <g class="bm-regions">
-                      <circle class="bm-region" tabindex="0" data-zone="head" cx="100" cy="38" r="22"><title>Tête / Crâne</title></circle>
-                      <rect class="bm-region" tabindex="0" data-zone="neck" x="90" y="60" rx="4" ry="4" width="20" height="14"><title>Cou / Gorge</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="chest" x="65" y="78" rx="10" ry="10" width="70" height="50"><title>Thorax / Poitrine</title></rect>
+                      <circle class="bm-region" tabindex="0" data-zone="tete" cx="100" cy="38" r="22"><title>Tête / Crâne</title></circle>
+                      <rect class="bm-region" tabindex="0" data-zone="cou" x="90" y="60" rx="4" ry="4" width="20" height="14"><title>Cou / Gorge</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="thorax" x="65" y="78" rx="10" ry="10" width="70" height="50"><title>Thorax / Poitrine</title></rect>
                       <rect class="bm-region" tabindex="0" data-zone="abdomen" x="70" y="132" rx="10" ry="10" width="60" height="36"><title>Abdomen / Ventre</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="pelvis" x="72" y="172" rx="10" ry="10" width="56" height="28"><title>Bassin</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="upper_arm_left" x="38" y="82" rx="12" ry="12" width="22" height="40"><title>Bras gauche (haut)</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="forearm_left" x="38" y="124" rx="12" ry="12" width="22" height="80"><title>Avant-bras gauche</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="upper_arm_right" x="140" y="82" rx="12" ry="12" width="22" height="40"><title>Bras droit (haut)</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="forearm_right" x="140" y="124" rx="12" ry="12" width="22" height="80"><title>Avant-bras droit</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="thigh_left" x="78" y="204" rx="10" ry="10" width="20" height="68"><title>Cuisse gauche</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="leg_left" x="78" y="274" rx="10" ry="10" width="20" height="70"><title>Jambe gauche</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="thigh_right" x="102" y="204" rx="10" ry="10" width="20" height="68"><title>Cuisse droite</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="leg_right" x="102" y="274" rx="10" ry="10" width="20" height="70"><title>Jambe droite</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="bassin" x="72" y="172" rx="10" ry="10" width="56" height="28"><title>Bassin</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="bras_g" x="38" y="82" rx="12" ry="12" width="22" height="40"><title>Bras gauche (haut)</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="avant_bras_g" x="38" y="124" rx="12" ry="12" width="22" height="80"><title>Avant-bras gauche</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="bras_d" x="140" y="82" rx="12" ry="12" width="22" height="40"><title>Bras droit (haut)</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="avant_bras_d" x="140" y="124" rx="12" ry="12" width="22" height="80"><title>Avant-bras droit</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="cuisse_g" x="78" y="204" rx="10" ry="10" width="20" height="68"><title>Cuisse gauche</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="jambe_g" x="78" y="274" rx="10" ry="10" width="20" height="70"><title>Jambe gauche</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="cuisse_d" x="102" y="204" rx="10" ry="10" width="20" height="68"><title>Cuisse droite</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="jambe_d" x="102" y="274" rx="10" ry="10" width="20" height="70"><title>Jambe droite</title></rect>
                     </g>
                   </svg>
                   <svg id="bodymap-back" viewBox="0 0 200 360" width="100%" role="img" aria-labelledby="bmTitleB" style="display:none;">
                     <title id="bmTitleB">Body-map mannequin (dos)</title>
                     <g class="bm-regions">
-                      <circle class="bm-region" tabindex="0" data-zone="back_head" cx="100" cy="38" r="22"><title>Arrière de la tête</title></circle>
-                      <rect class="bm-region" tabindex="0" data-zone="back_neck" x="90" y="60" rx="4" ry="4" width="20" height="14"><title>Nuque</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="upper_back" x="65" y="78" rx="10" ry="10" width="70" height="50"><title>Haut du dos (Dorsales)</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="lower_back" x="70" y="132" rx="10" ry="10" width="60" height="36"><title>Bas du dos (Lombaires)</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="buttocks" x="72" y="172" rx="10" ry="10" width="56" height="28"><title>Fesses</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="back_upper_arm_left" x="38" y="82" rx="12" ry="12" width="22" height="40"><title>Arrière bras gauche</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="back_forearm_left" x="38" y="124" rx="12" ry="12" width="22" height="80"><title>Arrière avant-bras G</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="back_upper_arm_right" x="140" y="82" rx="12" ry="12" width="22" height="40"><title>Arrière bras droit</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="back_forearm_right" x="140" y="124" rx="12" ry="12" width="22" height="80"><title>Arrière avant-bras D</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="back_thigh_left" x="78" y="204" rx="10" ry="10" width="20" height="68"><title>Arrière cuisse gauche</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="back_leg_left" x="78" y="274" rx="10" ry="10" width="20" height="70"><title>Mollet gauche</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="back_thigh_right" x="102" y="204" rx="10" ry="10" width="20" height="68"><title>Arrière cuisse droite</title></rect>
-                      <rect class="bm-region" tabindex="0" data-zone="back_leg_right" x="102" y="274" rx="10" ry="10" width="20" height="70"><title>Mollet droit</title></rect>
+                      <circle class="bm-region" tabindex="0" data-zone="tete_arriere" cx="100" cy="38" r="22"><title>Arrière de la tête</title></circle>
+                      <rect class="bm-region" tabindex="0" data-zone="nuque" x="90" y="60" rx="4" ry="4" width="20" height="14"><title>Nuque</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="dos_haut" x="65" y="78" rx="10" ry="10" width="70" height="50"><title>Haut du dos (Dorsales)</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="lombaires" x="70" y="132" rx="10" ry="10" width="60" height="36"><title>Bas du dos (Lombaires)</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="fesses" x="72" y="172" rx="10" ry="10" width="56" height="28"><title>Fesses</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="arriere_bras_g" x="38" y="82" rx="12" ry="12" width="22" height="40"><title>Arrière bras gauche</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="arriere_avant_bras_g" x="38" y="124" rx="12" ry="12" width="22" height="80"><title>Arrière avant-bras G</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="arriere_bras_d" x="140" y="82" rx="12" ry="12" width="22" height="40"><title>Arrière bras droit</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="arriere_avant_bras_d" x="140" y="124" rx="12" ry="12" width="22" height="80"><title>Arrière avant-bras D</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="arriere_cuisse_g" x="78" y="204" rx="10" ry="10" width="20" height="68"><title>Arrière cuisse gauche</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="arriere_jambe_g" x="78" y="274" rx="10" ry="10" width="20" height="70"><title>Mollet gauche</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="arriere_cuisse_d" x="102" y="204" rx="10" ry="10" width="20" height="68"><title>Arrière cuisse droite</title></rect>
+                      <rect class="bm-region" tabindex="0" data-zone="arriere_jambe_d" x="102" y="274" rx="10" ry="10" width="20" height="70"><title>Mollet droit</title></rect>
                     </g>
                   </svg>
                   <div class="bodymap-hint">Cliquez sur une ou plusieurs zones.</div>
@@ -273,7 +283,7 @@
           </div>
 
           <div class="section-title" style="font-size:16px; margin-top:10px;">Signes Vitaux (RP)</div>
-          <div class="row" style="gap:12px;">
+          <div class="row vitals-grid" style="gap:12px;">
             <div style="flex:1 1 100px;">
               <label for="vital-fc">FC (bpm)</label>
               <input type="number" id="vital-fc" placeholder="ex. 75">
@@ -583,8 +593,6 @@
         els.countdownDisplay.textContent = '00:00';
         els.countdownDisplay.style.color = 'var(--danger)';
         setTimeout(() => els.countdownDisplay.style.color = 'var(--text)', 2000);
-        // Optionnel: alerte sonore
-        // new Audio('path/to/alarm.mp3').play();
       } else {
         els.countdownDisplay.textContent = formatTimer(remaining);
       }
@@ -630,19 +638,19 @@
       if (findings.burn) {
         let burnAdvice = 'Nettoyage stérile, pansement, hydratation. Évaluer surface.';
         let burnPrio = 2;
-        if (locations.some(z => ['head', 'neck', 'chest', 'back_head', 'back_neck'].includes(z))) {
+        if (locations.some(z => ['tete', 'cou', 'thorax', 'tete_arriere', 'nuque'].includes(z))) {
             burnAdvice = 'Brûlure voies aéro-digestives suspectée. Évacuation urgente.';
             burnPrio = 1;
         }
         addResult({ tag: 'Brûlure(s)', priority: burnPrio, advice: burnAdvice });
       }
       
-      // Helpers zones
-      const isHeadNeck = z => ['head', 'neck', 'back_head', 'back_neck'].includes(z);
-      const isChest = z => ['chest', 'upper_back'].includes(z);
-      const isAbdoPelvis = z => ['abdomen', 'pelvis', 'lower_back', 'buttocks'].includes(z);
-      const isUpperExt = z => z.includes('arm');
-      const isLowerExt = z => z.includes('thigh') || z.includes('leg');
+      // Helpers zones (UTILISANT LES ID FRANÇAIS)
+      const isHeadNeck = z => ['tete', 'cou', 'tete_arriere', 'nuque'].includes(z);
+      const isChest = z => ['thorax', 'dos_haut'].includes(z);
+      const isAbdoPelvis = z => ['abdomen', 'bassin', 'lombaires', 'fesses'].includes(z);
+      const isUpperExt = z => z.includes('bras');
+      const isLowerExt = z => z.includes('cuisse') || z.includes('jambe');
 
       // Évaluation par zone (pour chaque zone sélectionnée)
       for (const loc of locations) {
@@ -659,7 +667,7 @@
         if (isHeadNeck(loc)) {
           if (p >= 8) addResult({ tag: 'Traumatisme crânien modéré/sévère', priority: 2, advice: 'Céphalées intenses, vomissements, troubles → évacuation.' });
           else if (p >= 4) addResult({ tag: 'Commotion / contusion', priority: 3, advice: 'Repos, glace, surveillance 24h.' });
-          if (loc === 'neck' || loc === 'back_neck') {
+          if (loc === 'cou' || loc === 'nuque') {
             if (p >= 6 || findings.deformity) addResult({ tag: 'Entorse cervicale / lésion', priority: 2, advice: 'Minerve (RP), éviter mobilisations, évacuation si signes neuro.' });
           }
         }
@@ -675,8 +683,8 @@
         else if (isAbdoPelvis(loc)) {
           if (p >= 7 || (findings.bleeding && loc === 'abdomen')) addResult({ tag: 'Lésion viscérale / hémorragie interne (suspecte)', priority: 1, advice: 'Transport rapide, surveiller signes de choc.' });
           else if (p >= 4) addResult({ tag: 'Contusion abdominale', priority: 2, advice: 'Surveillance défense/rigidité; aggravation → évacuation.' });
-          if (loc === 'pelvis' && (p >= 6 || findings.deformity)) addResult({ tag: 'Atteinte pelvienne (suspecte)', priority: 1, advice: 'Douleur bassin/instabilité → évacuation.' });
-          if (loc === 'lower_back' && p >= 7) addResult({ tag: 'Atteinte rachidienne (suspecte)', priority: 1, advice: 'Immobiliser, éviter rotations, évacuation.' });
+          if (loc === 'bassin' && (p >= 6 || findings.deformity)) addResult({ tag: 'Atteinte pelvienne (suspecte)', priority: 1, advice: 'Douleur bassin/instabilité → évacuation.' });
+          if (loc === 'lombaires' && p >= 7) addResult({ tag: 'Atteinte rachidienne (suspecte)', priority: 1, advice: 'Immobiliser, éviter rotations, évacuation.' });
         }
         else if (isUpperExt(loc)) {
           if (findings.deformity || p >= 8) addResult({ tag: 'Fracture membre supérieur (suspecte)', priority: 2, advice: 'Immobiliser, attelle, évacuation pour imagerie.' });
@@ -684,8 +692,8 @@
         }
         else if (isLowerExt(loc)) {
           if (findings.deformity || p >= 8) {
-            const tag = (loc.includes('thigh')) ? 'Fracture fémur (suspecte)' : 'Fracture tibia/péroné (suspecte)';
-            const prio = (loc.includes('thigh')) ? 1 : 2;
+            const tag = (loc.includes('cuisse')) ? 'Fracture fémur (suspecte)' : 'Fracture tibia/péroné (suspecte)';
+            const prio = (loc.includes('cuisse')) ? 1 : 2;
             addResult({ tag: tag, priority: prio, advice: 'Douleur intense, déformation → immobiliser, évacuation.' });
           }
           else if (p >= 5) addResult({ tag: 'Entorse/déchirure membre inf.', priority: 3, advice: 'R.I.C.E., éviter appui, réévaluation.' });
@@ -1099,7 +1107,7 @@
           if (v.findings.burn) signes.push('brûlure');
           if (signes.length) txt += `Signes: ${signes.join(', ')}\n`;
       } else {
-          txt += `Symptômes: ${Object.entries(v.symptoms).filter(([k,v]) => v).map(([k]) => k).join(', ') || 'aucun'}\n`;
+          txt += `Symptômes: ${Object.entries(v.symptoms).filter(([k,v]) => v).map(([k]) => k.replace('sym-','')).join(', ') || 'aucun'}\n`;
           txt += `Vitals: FC:${v.vitals.fc || 'N/A'} | SpO2:${v.vitals.spo2 || 'N/A'}% | TA:${v.vitals.taSys || 'N/A'}/${v.vitals.taDia || 'N/A'} | HGT:${v.vitals.hgt || 'N/A'} | T°:${v.vitals.temp || 'N/A'}\n`;
           if (v.details) txt += `Détails: ${v.details}\n`;
       }
@@ -1117,6 +1125,38 @@
         setTimeout(() => els.btnCopy.textContent = old, 1200);
       });
     }
+
+    // --- Générateurs de vitaux aléatoires ---
+    
+    // Helper: nombre aléatoire entre min (inclus) et max (inclus)
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    // Helper: nombre aléatoire (float, 1 décimale)
+    function randFloat(min, max) {
+      return (Math.random() * (max - min) + min).toFixed(1);
+    }
+
+    /**
+     * Génère une valeur vitale avec 80% de chance d'être normale, 20% anormale.
+     */
+    function generateVital(normalMin, normalMax, abnormalLowMin, abnormalLowMax, abnormalHighMin, abnormalHighMax, isFloat = false) {
+      const isAbnormal = Math.random() < 0.20; // 20% de chance
+      const randFunc = isFloat ? randFloat : randInt;
+
+      if (isAbnormal) {
+        // 50/50 chance d'être bas ou haut (sauf si les plages sont identiques)
+        const isLow = Math.random() < 0.5;
+        if (isLow && abnormalLowMin !== abnormalLowMax) {
+          return randFunc(abnormalLowMin, abnormalLowMax);
+        } else {
+          return randFunc(abnormalHighMin, abnormalHighMax);
+        }
+      } else {
+        return randFunc(normalMin, normalMax);
+      }
+    }
+
 
     // --- Initialisation et Écouteurs ---
     els.year.textContent = new Date().getFullYear();
@@ -1144,6 +1184,34 @@
     els.btnJournalClose.addEventListener('click', () => els.journalModal.style.display = 'none');
     els.btnJournalClear.addEventListener('click', clearJournal);
     els.journalModal.addEventListener('click', (e) => { if (e.target === els.journalModal) els.journalModal.style.display = 'none'; });
+
+    // --- Écouteurs pour Vitals Aléatoires ---
+    document.querySelector('label[for="vital-fc"]').addEventListener('click', (e) => {
+      e.preventDefault(); // Empêche le focus sur l'input
+      els.vitalFc.value = generateVital(60, 100, 45, 59, 101, 140);
+    });
+    document.querySelector('label[for="vital-spo2"]').addEventListener('click', (e) => {
+      e.preventDefault();
+      // Pour SpO2, une anomalie est presque toujours basse
+      els.vitalSpo2.value = generateVital(95, 100, 88, 94, 88, 94); 
+    });
+    document.querySelector('label[for="vital-ta-sys"]').addEventListener('click', (e) => {
+      e.preventDefault();
+      els.vitalTaSys.value = generateVital(100, 140, 75, 89, 161, 190);
+    });
+    document.querySelector('label[for="vital-ta-dia"]').addEventListener('click', (e) => {
+      e.preventDefault();
+      els.vitalTaDia.value = generateVital(60, 90, 40, 49, 101, 110);
+    });
+    document.querySelector('label[for="vital-hgt"]').addEventListener('click', (e) => {
+      e.preventDefault();
+      els.vitalHgt.value = generateVital(70, 120, 40, 69, 181, 300);
+    });
+    document.querySelector('label[for="vital-temp"]').addEventListener('click', (e) => {
+      e.preventDefault();
+      els.vitalTemp.value = generateVital(36.5, 37.5, 35.0, 35.9, 38.1, 39.5, true);
+    });
+
 
     // Initialisation
     updatePainLabel();
