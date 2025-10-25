@@ -612,7 +612,7 @@
       els.countdownInput.disabled = false;
     }
 
-    // --- MOTEUR DE DIAGNOSTIC (TRAUMA) ---
+    // --- MOTEUR DE DIAGNOSTIC (TRAUMA) - REWORKED ---
     function computeTraumaDiagnosis({ locations, pain, findings, age, delayHours, hx }) {
       const out = [];
       const p = Number(pain);
@@ -626,8 +626,8 @@
       };
 
       // Red flags généraux
-      if (findings.bleeding) addResult({ tag: 'Hémorragie active', priority: 1, advice: 'Compression/garrot, évacuation rapide.' });
-      if (findings.lossOfConsciousness) addResult({ tag: 'Altération neurologique (TC suspect)', priority: 1, advice: 'Surveillance neuro, immobilisation tête/cou, évacuation.' });
+      if (findings.bleeding) addResult({ tag: 'Hémorragie active', priority: 1, advice: 'Compression/garrot, bilan choc, évacuation rapide pour hémostase.' });
+      if (findings.lossOfConsciousness) addResult({ tag: 'Traumatisme Crânien (TC) avec altération de conscience', priority: 1, advice: "Immobilisation rachis cervical, surveillance GCS, évacuation. Risque d'HED/HSD." });
 
       // GSW : toujours P1
       if (findings.gsw) {
@@ -636,72 +636,94 @@
       
       // Brûlures
       if (findings.burn) {
-        let burnAdvice = 'Nettoyage stérile, pansement, hydratation. Évaluer surface.';
+        let burnAdvice = 'Refroidir, pansement stérile (type tulle gras), hydratation.';
         let burnPrio = 2;
+        let burnTag = 'Brûlure 2ème degré (possible)';
         if (locations.some(z => ['tete', 'cou', 'thorax', 'tete_arriere', 'nuque'].includes(z))) {
-            burnAdvice = 'Brûlure voies aéro-digestives suspectée. Évacuation urgente.';
+            burnAdvice = "Risque d'œdème. Assise, O2 haut débit. Évacuation urgente pour fibroscopie/intubation.";
             burnPrio = 1;
+            burnTag = "Brûlure VADS / Lésion d'inhalation";
         }
-        addResult({ tag: 'Brûlure(s)', priority: burnPrio, advice: burnAdvice });
+        addResult({ tag: burnTag, priority: burnPrio, advice: burnAdvice });
       }
       
       // Helpers zones (UTILISANT LES ID FRANÇAIS)
       const isHeadNeck = z => ['tete', 'cou', 'tete_arriere', 'nuque'].includes(z);
       const isChest = z => ['thorax', 'dos_haut'].includes(z);
       const isAbdoPelvis = z => ['abdomen', 'bassin', 'lombaires', 'fesses'].includes(z);
-      const isUpperExt = z => z.includes('bras');
-      const isLowerExt = z => z.includes('cuisse') || z.includes('jambe');
+      const isUpperExt = z => z.includes('bras'); // Cible bras_g, avant_bras_g, arriere_bras_g, etc.
+      const isLowerExt = z => z.includes('cuisse') || z.includes('jambe'); // Cible cuisse_g, jambe_g, etc.
 
       // Évaluation par zone (pour chaque zone sélectionnée)
       for (const loc of locations) {
         
-        // GSW par zone
+        // GSW par zone (plus spécifique)
         if (findings.gsw) {
-          if (isChest(loc)) addResult({ tag: 'GSW thoracique — pneumo/hémothorax (suspect)', priority: 1, advice: 'Détresse respi possible : pansement occlusif 3 côtés, évacuation.' });
-          else if (isAbdoPelvis(loc)) addResult({ tag: 'GSW abdominal/pelvien — hémorragie interne (suspecte)', priority: 1, advice: 'Choc possible : transport rapide vers bloc.' });
-          else if (isHeadNeck(loc)) addResult({ tag: 'GSW tête/cou — lésion critique', priority: 1, advice: 'Saignement : prioriser contrôle, évacuation immédiate.' });
-          else if (isUpperExt(loc) || isLowerExt(loc)) addResult({ tag: 'GSW membre — lésion vasculo-nerveuse (suspecte)', priority: 1, advice: 'Garrot/pression, vérifier motricité/sensibilité distale, évacuation.' });
+          if (isChest(loc)) addResult({ tag: 'GSW Thoracique (Pneumo/Hémothorax Tendu suspecté)', priority: 1, advice: 'Pansement occlusif 3 côtés, O2. Préparer exsufflation si détresse. Évacuation.' });
+          else if (isAbdoPelvis(loc)) addResult({ tag: 'GSW Abdominal/Pelvien (Lésion viscérale/vasculaire)', priority: 1, advice: 'Choc hémorragique probable. Transport rapide vers bloc.' });
+          else if (isHeadNeck(loc)) addResult({ tag: 'GSW Tête/Cou (Lésion cérébrale/vasculaire critique)', priority: 1, advice: 'Saignement : prioriser contrôle, évacuation immédiate.' });
+          else if (isUpperExt(loc) || isLowerExt(loc)) addResult({ tag: 'GSW Membre (Lésion vasculo-nerveuse/Fracture ouverte)', priority: 1, advice: 'Garrot/pression, vérifier motricité/sensibilité distale, évacuation.' });
         }
         
         // Logique trauma standard
         if (isHeadNeck(loc)) {
-          if (p >= 8) addResult({ tag: 'Traumatisme crânien modéré/sévère', priority: 2, advice: 'Céphalées intenses, vomissements, troubles → évacuation.' });
-          else if (p >= 4) addResult({ tag: 'Commotion / contusion', priority: 3, advice: 'Repos, glace, surveillance 24h.' });
+          if (p >= 8) addResult({ tag: 'TC Sévère (Fracture crâne / Hémorragie suspectée)', priority: 1, advice: 'Rachis cervical! Bilan neuro (GCS, pupilles). Évacuation pour TDM cérébral.' });
+          else if (p >= 4) addResult({ tag: 'TC Léger / Commotion cérébrale', priority: 3, advice: 'Repos, surveillance neuro 24h. Si vomissements, confusion -> Hôpital.' });
+          
           if (loc === 'cou' || loc === 'nuque') {
-            if (p >= 6 || findings.deformity) addResult({ tag: 'Entorse cervicale / lésion', priority: 2, advice: 'Minerve (RP), éviter mobilisations, évacuation si signes neuro.' });
+            if (p >= 6 || findings.deformity) addResult({ tag: 'Entorse cervicale ("Coup du lapin") / Lésion rachis', priority: 2, advice: 'Minerve (RP), plan dur. Bilan neuro. Évacuation pour imagerie si signes ou douleur > 6.' });
           }
         }
         else if (isChest(loc)) {
           if (p >= 8 || findings.deformity) {
-            addResult({ tag: 'Fractures costales multiples / volet', priority: 1, advice: 'Détresse respi possible — évacuation urgente.' });
-            addResult({ tag: 'Pneumothorax/contusion pulmonaire (suspect)', priority: 1, advice: 'Douleur latérale + dyspnée → évacuation.' });
-          } else if (p >= 5) {
-            addResult({ tag: 'Fracture costale isolée', priority: 2, advice: 'Analgésie, surveiller dyspnée/toux.' });
-            addResult({ tag: 'Contusion costale', priority: 3, advice: 'Repos, glace, respiration contrôlée.' });
+            addResult({ tag: 'Volet Costal / Fractures Costales Multiples', priority: 1, advice: 'Risque de détresse respi (Respi paradoxale). O2, antalgiques. Évacuation.' });
+            addResult({ tag: 'Pneumothorax / Hémothorax (post-trauma)', priority: 1, advice: 'Douleur + dyspnée. O2. Évacuation pour drain thoracique.' });
+          } else if (p >= 6) {
+            addResult({ tag: 'Fracture Costale Isolée (suspectée)', priority: 2, advice: 'Antalgiques pour permettre respi. Risque de complication (pneumo). Évacuation pour radio.' });
+          } else if (p >= 4) {
+             addResult({ tag: 'Contusion Costale / Intercostale', priority: 3, advice: 'Glace, repos. Douleur invalidante mais non-critique.' });
           }
         }
         else if (isAbdoPelvis(loc)) {
-          if (p >= 7 || (findings.bleeding && loc === 'abdomen')) addResult({ tag: 'Lésion viscérale / hémorragie interne (suspecte)', priority: 1, advice: 'Transport rapide, surveiller signes de choc.' });
-          else if (p >= 4) addResult({ tag: 'Contusion abdominale', priority: 2, advice: 'Surveillance défense/rigidité; aggravation → évacuation.' });
-          if (loc === 'bassin' && (p >= 6 || findings.deformity)) addResult({ tag: 'Atteinte pelvienne (suspecte)', priority: 1, advice: 'Douleur bassin/instabilité → évacuation.' });
-          if (loc === 'lombaires' && p >= 7) addResult({ tag: 'Atteinte rachidienne (suspecte)', priority: 1, advice: 'Immobiliser, éviter rotations, évacuation.' });
+          if (p >= 7 || (findings.bleeding && loc === 'abdomen')) addResult({ tag: 'Hémorragie Interne (Rupture de rate/foie suspectée)', priority: 1, advice: 'Surveillance signes de choc (pâleur, tachy, hypoTA). Transport rapide, bilan écho-fast.' });
+          else if (p >= 4 && loc === 'abdomen') addResult({ tag: 'Contusion Abdominale (Hématome pariétal)', priority: 3, advice: 'Surveiller "ventre de bois" (défense). Si douleur augmente -> Hôpital.' });
+          
+          if (loc === 'bassin' && (p >= 6 || findings.deformity)) {
+              addResult({ tag: 'Fracture du Bassin / Disjonction Pubienne', priority: 1, advice: 'Urgence vitale ! Risque hémorragique majeur. Ne pas mobiliser, ceinture pelvienne (RP), plan dur. Évacuation.' });
+          }
+          if (loc === 'lombaires' && p >= 7) {
+              addResult({ tag: 'Traumatisme Rachis Lombaire (Fracture/Tassement suspecté)', priority: 1, advice: 'Immobilisation totale (plan dur), bilan sensitivo-moteur. Évacuation.' });
+          }
         }
         else if (isUpperExt(loc)) {
-          if (findings.deformity || p >= 8) addResult({ tag: 'Fracture membre supérieur (suspecte)', priority: 2, advice: 'Immobiliser, attelle, évacuation pour imagerie.' });
-          else if (p >= 5) addResult({ tag: 'Contusion/entorse membre sup.', priority: 3, advice: 'R.I.C.E., antalgiques.' });
+          if (findings.deformity || p >= 8) {
+             addResult({ tag: 'Fracture (Humérus/Radius/Ulna)', priority: 2, advice: 'Immobiliser (attelle, écharpe). Bilan vasculo-nerveux distal (pouls, sensibilité). Évacuation pour radio.' });
+          } else if (p >= 6) {
+             addResult({ tag: 'Luxation (Épaule/Coude) (possible)', priority: 2, advice: 'Déformation, impotence fonctionnelle. Ne pas réduire ! Immobiliser. Évacuation.' });
+          } else if (p >= 4) {
+             addResult({ tag: 'Entorse sévère / Contusion musculaire', priority: 3, advice: 'R.I.C.E. (Repos, Glace...). Si impotence totale, radio.' });
+          }
         }
         else if (isLowerExt(loc)) {
           if (findings.deformity || p >= 8) {
-            const tag = (loc.includes('cuisse')) ? 'Fracture fémur (suspecte)' : 'Fracture tibia/péroné (suspecte)';
-            const prio = (loc.includes('cuisse')) ? 1 : 2;
-            addResult({ tag: tag, priority: prio, advice: 'Douleur intense, déformation → immobiliser, évacuation.' });
+            const isFemur = loc.includes('cuisse');
+            const tag = isFemur ? 'Fracture du Fémur (suspectée)' : 'Fracture Tibia/Péroné (ouverte/fermée)';
+            const prio = isFemur ? 1 : 2;
+            const advice = isFemur 
+              ? 'P1 - Risque hémorragique. Attelle traction (RP), antalgiques. Évacuation rapide.'
+              : 'P2 - Attelle. Bilan vasculo-nerveux distal (pouls pédieux). Évacuation radio.';
+            addResult({ tag: tag, priority: prio, advice: advice });
           }
-          else if (p >= 5) addResult({ tag: 'Entorse/déchirure membre inf.', priority: 3, advice: 'R.I.C.E., éviter appui, réévaluation.' });
+          else if (p >= 6) {
+             addResult({ tag: 'Entorse Genou/Cheville (LCA/LLE suspecté)', priority: 3, advice: 'R.I.C.E. Immobilisation. Si appui impossible, radio pour exclure fracture.' });
+          } else if (p >= 4) {
+             addResult({ tag: 'Déchirure Musculaire / Contusion', priority: 3, advice: 'Repos, glace. Appui difficile. Béquilles (RP).' });
+          }
         }
       }
 
       if (!out.length && !findings.gsw && !findings.burn) {
-        addResult({ tag: 'Évaluation non spécifique', priority: 4, advice: 'Surveillance, éviter activité, réévaluation.' });
+        addResult({ tag: 'Blessures superficielles / RAS', priority: 4, advice: 'Nettoyage des plaies mineures, repos. Pas d\'évacuation nécessaire.' });
       }
 
       // Modificateurs généraux
@@ -712,9 +734,12 @@
 
       for (const item of out) {
         let pr = item.priority;
-        if (anticoag && (locations.some(isHeadNeck) || findings.lossOfConsciousness)) pr = 1;
-        if (extremeAge && pr > 1) pr -= 1;
-        if (persist && pr > 1) pr -= 1;
+        if (anticoag && (locations.some(isHeadNeck) || findings.lossOfConsciousness)) {
+            pr = 1; // Haut risque hémorragique
+            item.tag = item.tag + " (SOUS ANTICOAGULANTS)";
+        }
+        if (extremeAge && pr > 1) pr -= 1; // Augmenter la priorité pour les âges extrêmes
+        if (persist && pr > 1) pr -= 1; // Douleur persistante = plus suspect
         item.priority = clamp(pr, 1, 4);
       }
 
